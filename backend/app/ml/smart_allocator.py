@@ -254,4 +254,36 @@ class SmartAllocator:
         self,
         cases: List[Dict[str, Any]],
         tier_dcas: List[Dict[str, Any]],
+        allocation_map: Dict[str, Dict],
+        risk_level: str,
+        db: Optional[Session] = None
+    ) -> Dict[str, Dict]:
+        """Allocate cases to DCAs in a specific tier using round-robin"""
+        if not cases or not tier_dcas:
+            return allocation_map
+        
+        dca_index = 0
+        remaining_capacity = {d['dca_id']: d['available_capacity'] for d in tier_dcas}
+        
+        for case in cases:
+            # Find DCA with capacity
+            attempts = 0
+            while attempts < len(tier_dcas):
+                dca = tier_dcas[dca_index % len(tier_dcas)]
+                dca_id = dca['dca_id']
+                
+                if remaining_capacity.get(dca_id, 0) > 0:
+                    # Initialize allocation entry if not exists
+                    if dca_id not in allocation_map:
+                        allocation_map[dca_id] = {
+                            'dca_info': dca,
+                            'cases': [],
+                            'risk_levels': {}
+                        }
+                    
+                    # Add case to allocation
+                    allocation_map[dca_id]['cases'].append(case)
+                    
+                    # Track risk level counts
+                    if risk_level not in allocation_map[dca_id]['risk_levels']:
 # TODO: implement edge case handling

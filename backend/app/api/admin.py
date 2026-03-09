@@ -238,4 +238,34 @@ async def upload_cases_csv(
                 if pd.isna(row['account_id']) or pd.isna(row['debtor_name']) or pd.isna(row['original_amount']):
                     results["failed"].append({
                         "row": index + 1,
+                        "error": "Missing required fields",
+                        "data": row.to_dict()
+                    })
+                    continue
+                
+                # Check if case already exists
+                existing_case = db.query(Case).filter(Case.account_id == str(row['account_id'])).first()
+                if existing_case:
+                    results["failed"].append({
+                        "row": index + 1,
+                        "error": f"Case with account_id {row['account_id']} already exists",
+                        "data": row.to_dict()
+                    })
+                    continue
+                
+                # Prepare case data
+                case_data = {
+                    "account_id": str(row['account_id']),
+                    "debtor_name": str(row['debtor_name']),
+                    "debtor_email": str(row.get('debtor_email', '')) if pd.notna(row.get('debtor_email')) else None,
+                    "debtor_phone": str(row.get('debtor_phone', '')) if pd.notna(row.get('debtor_phone')) else None,
+                    "debtor_address": str(row.get('debtor_address', '')) if pd.notna(row.get('debtor_address')) else None,
+                    "original_amount": float(row['original_amount']),
+                    "current_amount": float(row.get('current_amount', row['original_amount'])),
+                    "currency": str(row.get('currency', 'USD')),
+                    "days_delinquent": int(row['days_delinquent']),
+                    "debt_age_days": int(row.get('debt_age_days', row['days_delinquent'])),
+                    "debt_type": str(row.get('debt_type', 'other')) if pd.notna(row.get('debt_type')) else 'other'
+                }
+                
 # TODO: implement edge case handling

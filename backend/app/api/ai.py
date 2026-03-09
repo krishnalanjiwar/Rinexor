@@ -339,4 +339,35 @@ async def confirm_allocation(
         if analysis_id not in _analysis_cache:
             raise HTTPException(status_code=404, detail="Analysis not found. Please start over.")
         
+        analysis_result = _analysis_cache[analysis_id]
+        classified_cases = analysis_result['classified_cases']
+        allocation_preview = analysis_result.get('allocation_preview')
+        
+        if not allocation_preview:
+            raise HTTPException(status_code=400, detail="Allocation preview not found. Please generate preview first.")
+        
+        # Create cases in database first (if they don't exist)
+        created_cases = 0
+        for case_data in classified_cases:
+            account_id = case_data.get('account_id')
+            
+            # Check if case already exists
+            existing = db.query(Case).filter(Case.account_id == account_id).first()
+            
+            if not existing:
+                new_case = Case(
+                    id=str(uuid_lib.uuid4()),
+                    account_id=account_id,
+                    debtor_name=case_data.get('debtor_name', 'Unknown'),
+                    debtor_email=case_data.get('debtor_email'),
+                    debtor_phone=case_data.get('debtor_phone'),
+                    debtor_address=case_data.get('debtor_address'),
+                    original_amount=case_data.get('original_amount', 0),
+                    current_amount=case_data.get('current_amount', case_data.get('original_amount', 0)),
+                    days_delinquent=case_data.get('days_delinquent', 0),
+                    debt_age_days=case_data.get('debt_age_days', case_data.get('days_delinquent', 0)),
+                    status=CaseStatus.NEW,
+                    recovery_score=case_data.get('recovery_probability', 0) * 100,
+                    ml_features={
+                        'risk_level': case_data.get('risk_level'),
 # TODO: implement edge case handling
