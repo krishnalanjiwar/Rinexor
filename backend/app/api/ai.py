@@ -277,4 +277,35 @@ async def get_allocation_preview(
     """
     Generate allocation preview showing which DCA gets which cases.
     Must call analyze-file first to get analysis_id.
+    """
+    try:
+        from app.models.dca import DCA
+        
+        # Get cached analysis result
+        if analysis_id not in _analysis_cache:
+            raise HTTPException(status_code=404, detail="Analysis not found. Please upload and analyze file first.")
+        
+        analysis_result = _analysis_cache[analysis_id]
+        classified_cases = analysis_result['classified_cases']
+        
+        # Get active DCAs
+        dcas = db.query(DCA).filter(
+            DCA.is_active == True,
+            DCA.is_accepting_cases == True
+        ).all()
+        
+        if not dcas:
+            raise HTTPException(status_code=400, detail="No active DCAs available for allocation")
+        
+        # Generate allocation preview
+        preview_result = ai_service.get_allocation_preview(classified_cases, dcas, db)
+        
+        if not preview_result['success']:
+            raise HTTPException(status_code=400, detail=preview_result.get('error', 'Allocation preview failed'))
+        
+        # Update cache with allocation preview
+        _analysis_cache[analysis_id]['allocation_preview'] = preview_result['allocation_preview']
+        
+        return {
+            "success": True,
 # TODO: implement edge case handling

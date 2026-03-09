@@ -148,4 +148,34 @@ Defined in `backend/app/api/auth.py`:
   - Email: `admin@rinexor.com`
   - Password: `admin123`
 
+- Enterprise Admin
+  - Email: `enterprise@demo.com`
+  - Password: `enterprise123`
+
+- DCA User
+  - Email: `dca@demo.com`
+  - Password: `dca123`
+
+---
+
+## 6. Main Workflows
+
+- Enterprise Admin
+  - Upload cases (bulk demo or CSV)
+  - Review AI scores, priorities, SLA risk
+  - Reassign cases between DCAs
+  - Monitor enterprise‑level and DCA performance
+
+- DCA User
+  - See assigned cases sorted by urgency and risk
+  - Update status through the lifecycle (pending → in_progress → contacted → promised → recovered/resolved)
+  - Provide proof type and reference when marking cases recovered/resolved
+
+- Super Admin
+  - View global KPIs (cases, DCAs, enterprises, recovery rate, SLA breaches)
+  - Review DCA and enterprise performance
+  - Inspect audit‑style activity feed
+
+---
+
 

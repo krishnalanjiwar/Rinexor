@@ -268,4 +268,5 @@ class RiskClassifier:
                 'total_amount': round(level_cases['original_amount'].sum(), 2) if count > 0 else 0.0,
                 'avg_risk_score': round(level_cases['risk_score'].mean(), 2) if count > 0 else 0.0
             }
-# TODO: implement edge case handling
+        
+        return distribution
