@@ -118,4 +118,34 @@ class AIService:
         
         insights = {
             'high_priority_count': len(df[df['priority_level'] == 'high']),
+            'medium_priority_count': len(df[df['priority_level'] == 'medium']),
+            'low_priority_count': len(df[df['priority_level'] == 'low']),
+            'avg_recovery_score': round(df['recovery_score'].mean(), 1),
+            'total_expected_recovery': round(df.get('expected_recovery_value', 0).sum(), 2)
+        }
+        
+        # Resource allocation recommendation
+        high_priority_value = df[df['priority_level'] == 'high'].get('expected_recovery_value', 0).sum()
+        total_value = df.get('expected_recovery_value', 0).sum()
+        
+        if total_value > 0:
+            high_priority_percentage = (high_priority_value / total_value) * 100
+            if high_priority_percentage > 60:
+                insights['resource_recommendation'] = 'Focus 70% resources on high priority cases'
+            elif high_priority_percentage > 30:
+                insights['resource_recommendation'] = 'Balance resources across all priorities'
+            else:
+                insights['resource_recommendation'] = 'Spread resources, focus on volume'
+        else:
+            insights['resource_recommendation'] = 'Insufficient data for recommendation'
+        
+        return insights
+    
+    def train_model(self, training_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Train the AI model with new data
+        """
+        try:
+            # Convert to dataframe
+            df = pd.DataFrame(training_data)
 # TODO: implement edge case handling
