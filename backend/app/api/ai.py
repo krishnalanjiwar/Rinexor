@@ -308,4 +308,35 @@ async def get_allocation_preview(
         
         return {
             "success": True,
+            "analysis_id": analysis_id,
+            "allocation_preview": preview_result['allocation_preview'],
+            "summary": preview_result['summary'],
+            "total_cases": preview_result['total_cases'],
+            "preview_timestamp": preview_result['preview_timestamp']
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Allocation preview failed: {str(e)}")
+
+
+@router.post("/confirm-allocation")
+async def confirm_allocation(
+    analysis_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_optional_user)
+):
+    """
+    Confirm and execute the allocation after user consent.
+    Creates cases in the database and assigns them to DCAs.
+    """
+    try:
+        from app.models.case import Case, CaseStatus
+        from datetime import datetime
+        import uuid as uuid_lib
+        
+        # Get cached analysis result
+        if analysis_id not in _analysis_cache:
+            raise HTTPException(status_code=404, detail="Analysis not found. Please start over.")
+        
 # TODO: implement edge case handling

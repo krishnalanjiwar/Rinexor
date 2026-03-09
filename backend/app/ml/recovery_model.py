@@ -215,4 +215,34 @@ class RecoveryModel:
             key_factors.append('Stable employment')
         
         # Determine recommended action
-# TODO: implement edge case handling
+        if probability > 0.7:
+            action = 'Aggressive collection - High recovery potential'
+        elif probability > 0.4:
+            action = 'Standard collection process'
+        else:
+            action = 'Consider settlement or write-off'
+        
+        return {
+            'key_factors': key_factors[:3],  # Top 3 factors
+            'risk_factors': risk_factors[:3],  # Top 3 risks
+            'recommended_action': action
+        }
+    
+    def save_model(self, filepath: str):
+        """Save model to file"""
+        with open(filepath, 'wb') as f:
+            pickle.dump({
+                'model': self.model,
+                'scaler': self.scaler,
+                'feature_columns': self.feature_columns,
+                'is_trained': self.is_trained
+            }, f)
+    
+    def load_model(self, filepath: str):
+        """Load model from file"""
+        with open(filepath, 'rb') as f:
+            data = pickle.load(f)
+            self.model = data['model']
+            self.scaler = data['scaler']
+            self.feature_columns = data['feature_columns']
+            self.is_trained = data['is_trained']

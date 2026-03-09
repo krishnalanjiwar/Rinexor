@@ -329,3 +329,33 @@ interface Case {
 }
 ```
 
+### **🏢 DCA Object**
+```typescript
+interface DCA {
+  id: string;
+  name: string;
+  code: string;
+  contact_person: string;
+  email: string;
+  phone?: string;
+  performance_score: number;
+  recovery_rate: number;
+  is_active: boolean;
+  created_at: string;
+}
+```
+
+### **👤 User Object**
+```typescript
+interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: "enterprise_admin" | "collection_manager" | "dca_agent";
+  dca_id?: string;
+  is_active: boolean;
+  created_at: string;
+}
+```
+
+

@@ -268,4 +268,34 @@ class AIService:
         # Ensure numeric columns
         if 'original_amount' in df.columns:
             df['original_amount'] = pd.to_numeric(df['original_amount'], errors='coerce').fillna(0)
+        
+        if 'current_amount' not in df.columns:
+            df['current_amount'] = df.get('original_amount', 0)
+        else:
+            df['current_amount'] = pd.to_numeric(df['current_amount'], errors='coerce').fillna(df['original_amount'])
+        
+        if 'days_delinquent' in df.columns:
+            df['days_delinquent'] = pd.to_numeric(df['days_delinquent'], errors='coerce').fillna(0).astype(int)
+        else:
+            df['days_delinquent'] = 30  # Default
+        
+        if 'debt_age_days' not in df.columns:
+            df['debt_age_days'] = df['days_delinquent']
+        
+        if 'credit_score' in df.columns:
+            df['credit_score'] = pd.to_numeric(df['credit_score'], errors='coerce').fillna(650).astype(int)
+        else:
+            df['credit_score'] = 650  # Default
+        
+        # Generate account_id if not present
+        if 'account_id' not in df.columns:
+            df['account_id'] = [f'ACC_{i+1:05d}' for i in range(len(df))]
+        
+        # Fill missing string columns
+        if 'debtor_name' in df.columns:
+            df['debtor_name'] = df['debtor_name'].fillna('Unknown')
+        
+        return df
+    
+    def analyze_uploaded_file(self, file_content: bytes, filename: str) -> Dict[str, Any]:
 # TODO: implement edge case handling
