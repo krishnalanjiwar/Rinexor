@@ -88,4 +88,34 @@ class RiskClassifier:
             'total_cases': len(cases),
             'classified_cases': classified_cases,
             'risk_distribution': distribution,
+            'classification_timestamp': datetime.now().isoformat()
+        }
+    
+    def _calculate_risk_score(self, case_data: Dict[str, Any]) -> float:
+        """
+        Calculate risk score (0-100) based on case features.
+        Higher score = Higher risk (harder to recover)
+        """
+        risk_score = 0.0
+        
+        # 1. Days Delinquent (30% weight)
+        days_delinquent = case_data.get('days_delinquent', 0)
+        if days_delinquent > 180:
+            delinquency_risk = 100
+        elif days_delinquent > 120:
+            delinquency_risk = 80
+        elif days_delinquent > 90:
+            delinquency_risk = 60
+        elif days_delinquent > 60:
+            delinquency_risk = 45
+        elif days_delinquent > 30:
+            delinquency_risk = 30
+        else:
+            delinquency_risk = 15
+        risk_score += delinquency_risk * 0.30
+        
+        # 2. Original Amount (25% weight) - Larger amounts are harder to recover
+        amount = case_data.get('original_amount', 0)
+        if amount > 100000:
+            amount_risk = 90
 # TODO: implement edge case handling
