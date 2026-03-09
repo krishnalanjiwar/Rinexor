@@ -208,4 +208,34 @@ class RinexorAPI {
       const data = await response.json();
       this.token = data.access_token;
       localStorage.setItem('rinexor_token', this.token);
+      return data;
+    }
+    throw new Error('Login failed');
+  }
+
+  async apiCall(endpoint, options = {}) {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`API call failed: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+}
+
+// Usage
+const api = new RinexorAPI();
 

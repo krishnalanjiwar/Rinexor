@@ -153,4 +153,35 @@ async def get_model_status(
     """Get AI model status"""
     try:
         import os
+        model_exists = os.path.exists("ml_models/recovery_model.pkl")
+        
+        return {
+            "model_trained": model_exists,
+            "model_path": "ml_models/recovery_model.pkl" if model_exists else None,
+            "ai_service_initialized": True,
+            "using_rule_based": not model_exists,
+            "message": "Using trained AI model" if model_exists else "Using rule-based fallback"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get model status: {str(e)}")
+
+@router.post("/prioritize-cases")
+async def prioritize_cases(
+    case_data_list: List[Dict[str, Any]],
+    current_user: dict = Depends(get_current_user)
+):
+    """Prioritize multiple cases"""
+    try:
+        from app.ml.priority_engine import PriorityEngine
+        prioritized = PriorityEngine.batch_prioritize(case_data_list)
+        
+        return {
+            "total_cases": len(prioritized),
+            "prioritized_cases": prioritized[:50],  # Return top 50
+            "high_priority_count": sum(1 for c in prioritized if c["priority_level"] == "high"),
+            "medium_priority_count": sum(1 for c in prioritized if c["priority_level"] == "medium"),
+            "low_priority_count": sum(1 for c in prioritized if c["priority_level"] == "low")
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prioritization failed: {str(e)}")
 # TODO: implement edge case handling
