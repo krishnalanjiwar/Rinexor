@@ -448,4 +448,45 @@ async def get_csv_template(
                     "required": False,
                     "description": "Type of debt (credit_card, mortgage, personal_loan, etc.)"
                 }
-# TODO: implement edge case handling
+            ]
+        },
+        "sample_data": [
+            {
+                "account_id": "ACC-001",
+                "debtor_name": "John Doe",
+                "debtor_email": "john.doe@email.com",
+                "debtor_phone": "+1-555-0123",
+                "debtor_address": "123 Main St, City, State 12345",
+                "original_amount": 5000.00,
+                "current_amount": 4500.00,
+                "currency": "USD",
+                "days_delinquent": 45,
+                "debt_age_days": 45,
+                "debt_type": "credit_card"
+            },
+            {
+                "account_id": "ACC-002", 
+                "debtor_name": "Jane Smith",
+                "debtor_email": "jane.smith@email.com",
+                "debtor_phone": "+1-555-0456",
+                "debtor_address": "456 Oak Ave, City, State 67890",
+                "original_amount": 12000.00,
+                "current_amount": 12000.00,
+                "currency": "USD", 
+                "days_delinquent": 90,
+                "debt_age_days": 90,
+                "debt_type": "personal_loan"
+            }
+        ],
+        "instructions": [
+            "Download this template and fill in your case data",
+            "All required fields must be provided",
+            "Ensure account_id is unique for each case",
+            "Use proper number formats (no commas or currency symbols)",
+            "Save as CSV format before uploading",
+            "Maximum file size: 10MB",
+            "Maximum rows: 1000 cases per upload"
+        ]
+    }
+    
+    return template_data

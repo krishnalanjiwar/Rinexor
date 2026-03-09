@@ -339,4 +339,10 @@ except Exception as e:
     # Show tables
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     tables = cursor.fetchall()
-# TODO: implement edge case handling
+    
+    print(f"\n✅ Created {len(tables)} basic tables:")
+    for table in tables:
+        print(f"  • {table[0]}")
+    
+    conn.close()
+    print("\n⚠️  Using basic database setup. Some features may be limited.")

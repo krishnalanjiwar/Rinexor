@@ -658,4 +658,64 @@ async def get_dashboard_recovery_chart(
             "cases_created": cre["cases_created"],
         })
 
+    # Generate simple forecast for next 3 months
+    forecast_data = []
+    if chart_data:
+        recent = chart_data[-3:] if len(chart_data) >= 3 else chart_data
+        avg_recovery = sum(d["recovery"] for d in recent) / len(recent)
+        growth_factor = 1.1  # 10% growth assumption
+
+        for i in range(1, 4):
+            future_month_num = (now.month + i - 1) % 12 + 1
+            future_name = month_names.get(f'{future_month_num:02d}', f'M+{i}')
+            forecasted = round(avg_recovery * (growth_factor ** i), 2)
+            forecast_data.append({
+                "name": future_name,
+                "forecast": forecasted,
+                "recovery": None,
+            })
+
+    return {
+        "chart_data": chart_data,
+        "forecast_data": forecast_data,
+        "total_months": len(chart_data),
+    }
+
+
+@router.get("/dashboard/top-dcas")
+async def get_dashboard_top_dcas(
+    limit: int = Query(5, description="Number of top DCAs"),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get top performing DCAs for dashboard sidebar"""
+
+    dcas = db.query(DCA).filter(DCA.is_active == True).order_by(
+        DCA.performance_score.desc()
+    ).limit(limit).all()
+
+    top_dcas = []
+    for dca in dcas:
+        # Get case stats for this DCA
+        total_assigned = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id
+        ).scalar() or 0
+
+        resolved = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id,
+            Case.status == CaseStatus.RESOLVED
+        ).scalar() or 0
+
+        amount_assigned = db.query(func.sum(Case.original_amount)).filter(
+            Case.dca_id == dca.id
+        ).scalar() or 0
+
+        amount_recovered = db.query(
+            func.sum(Case.original_amount - Case.current_amount)
+        ).filter(
+            Case.dca_id == dca.id,
+            Case.status == CaseStatus.RESOLVED
+        ).scalar() or 0
+
+        recovery_pct = round((amount_recovered / amount_assigned * 100) if amount_assigned > 0 else 0, 1)
 # TODO: implement edge case handling
