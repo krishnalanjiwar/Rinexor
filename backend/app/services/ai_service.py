@@ -238,4 +238,34 @@ class AIService:
             }
             
         except Exception as e:
+            return {
+                'success': False,
+                'error': f'Failed to parse file: {str(e)}'
+            }
+    
+    def _find_similar_columns(self, available: List[str], required: List[str]) -> Dict[str, Optional[str]]:
+        """Find similar column names using fuzzy matching"""
+        mapping = {}
+        available_lower = {col.lower().replace('_', ''): col for col in available}
+        
+        for req in required:
+            req_lower = req.lower().replace('_', '')
+            if req_lower in available_lower:
+                mapping[req] = available_lower[req_lower]
+            else:
+                # Try partial matches
+                for avail_lower, avail in available_lower.items():
+                    if req_lower in avail_lower or avail_lower in req_lower:
+                        mapping[req] = avail
+                        break
+                else:
+                    mapping[req] = None
+        
+        return mapping
+    
+    def _clean_case_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Clean and standardize case data"""
+        # Ensure numeric columns
+        if 'original_amount' in df.columns:
+            df['original_amount'] = pd.to_numeric(df['original_amount'], errors='coerce').fillna(0)
 # TODO: implement edge case handling

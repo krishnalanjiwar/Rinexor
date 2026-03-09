@@ -196,4 +196,7 @@ def authenticate_user(email: str, password: str) -> Optional[Dict[str, Any]]:
     """Authenticate by email + password. Returns user dict or None."""
     user = get_user_by_email(email)
     if not user:
-# TODO: implement edge case handling
+        return None
+    if not pwd_context.verify(password, user.get("hashed_password", "")):
+        return None
+    return user

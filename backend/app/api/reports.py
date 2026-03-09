@@ -358,4 +358,34 @@ async def get_portfolio_analysis(
         func.count(Case.id).label('count'),
         func.sum(Case.original_amount).label('amount'),
         func.avg(Case.recovery_score).label('avg_score')
+    ).group_by(Case.recovery_score_band).all()
+    
+    recovery_band_data = {}
+    for band, count, amount, avg_score in recovery_bands:
+        recovery_band_data[band] = {
+            "count": count,
+            "amount": float(amount or 0),
+            "avg_recovery_score": round(float(avg_score or 0), 2)
+        }
+    
+    # Age distribution
+    age_ranges = [
+        ("0-30 days", 0, 30),
+        ("31-60 days", 31, 60),
+        ("61-90 days", 61, 90),
+        ("91-180 days", 91, 180),
+        ("180+ days", 181, 9999)
+    ]
+    
+    age_distribution = {}
+    for label, min_days, max_days in age_ranges:
+        if max_days == 9999:
+            count = db.query(func.count(Case.id)).filter(Case.days_delinquent >= min_days).scalar() or 0
+            amount = db.query(func.sum(Case.original_amount)).filter(Case.days_delinquent >= min_days).scalar() or 0
+        else:
+            count = db.query(func.count(Case.id)).filter(
+                and_(Case.days_delinquent >= min_days, Case.days_delinquent <= max_days)
+            ).scalar() or 0
+            amount = db.query(func.sum(Case.original_amount)).filter(
+                and_(Case.days_delinquent >= min_days, Case.days_delinquent <= max_days)
 # TODO: implement edge case handling

@@ -208,4 +208,34 @@ async def upload_cases_csv(
     
     try:
         # Read CSV file
+        contents = await file.read()
+        df = pd.read_csv(io.StringIO(contents.decode('utf-8')))
+        
+        # Validate required columns
+        required_columns = ['account_id', 'debtor_name', 'original_amount', 'days_delinquent']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        
+        if missing_columns:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Missing required columns: {', '.join(missing_columns)}"
+            )
+        
+        # Process cases
+        results = {
+            "total_rows": len(df),
+            "successful": [],
+            "failed": [],
+            "summary": {}
+        }
+        
+        ai_service = AIService()
+        ai_service.initialize()
+        
+        for index, row in df.iterrows():
+            try:
+                # Validate required fields
+                if pd.isna(row['account_id']) or pd.isna(row['debtor_name']) or pd.isna(row['original_amount']):
+                    results["failed"].append({
+                        "row": index + 1,
 # TODO: implement edge case handling
