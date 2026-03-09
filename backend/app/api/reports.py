@@ -328,4 +328,34 @@ async def get_sla_compliance_report(
 @router.get("/portfolio/analysis")
 async def get_portfolio_analysis(
     db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get comprehensive portfolio analysis"""
+    
+    # Total portfolio value
+    total_portfolio_value = db.query(func.sum(Case.original_amount)).scalar() or 0
+    current_portfolio_value = db.query(func.sum(Case.current_amount)).scalar() or 0
+    recovered_value = total_portfolio_value - current_portfolio_value
+    
+    # Cases by priority
+    priority_breakdown = db.query(
+        Case.priority,
+        func.count(Case.id).label('count'),
+        func.sum(Case.original_amount).label('amount')
+    ).group_by(Case.priority).all()
+    
+    priority_data = {}
+    for priority, count, amount in priority_breakdown:
+        priority_data[priority] = {
+            "count": count,
+            "amount": float(amount or 0),
+            "percentage": round(count / db.query(func.count(Case.id)).scalar() * 100, 2)
+        }
+    
+    # Cases by recovery score band
+    recovery_bands = db.query(
+        Case.recovery_score_band,
+        func.count(Case.id).label('count'),
+        func.sum(Case.original_amount).label('amount'),
+        func.avg(Case.recovery_score).label('avg_score')
 # TODO: implement edge case handling

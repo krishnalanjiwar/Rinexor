@@ -268,4 +268,34 @@ const updateCase = async (caseId, updates) => {
 ```
 
 ### **📊 Dashboard Data**
+```javascript
+// Get dashboard statistics
+const getDashboardStats = async () => {
+  return api.apiCall('/cases/dashboard/stats');
+};
+
+// Get reports data
+const getReports = async () => {
+  const [overview, trends, compliance] = await Promise.all([
+    api.apiCall('/reports/dashboard/overview'),
+    api.apiCall('/reports/recovery/trends?period_days=30'),
+    api.apiCall('/reports/sla/compliance?period_days=30')
+  ]);
+  
+  return { overview, trends, compliance };
+};
+```
+
+### **📁 CSV Upload**
+```javascript
+const uploadCases = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  const response = await fetch(`${api.baseURL}/admin/upload-cases`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${api.token}`
+    },
+    body: formData
 

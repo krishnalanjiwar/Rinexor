@@ -222,4 +222,36 @@ class SmartAllocator:
                     'performance_score': round(performance, 3),
                     'recovery_rate': round(recovery_rate, 3),
                     'sla_compliance': round(sla_compliance, 3),
+                    'composite_score': round(composite_score, 3),
+                    'available_capacity': available_capacity,
+                    'max_capacity': max_capacity
+                })
+        
+        # Sort by composite score (highest first)
+        ranked.sort(key=lambda x: x['composite_score'], reverse=True)
+        
+        return ranked
+    
+    def _get_dca_tiers(self, ranked_dcas: List[Dict[str, Any]]) -> Dict[str, List[Dict]]:
+        """Split DCAs into performance tiers"""
+        n = len(ranked_dcas)
+        
+        if n == 0:
+            return {'top': [], 'mid': [], 'lower': []}
+        
+        # Calculate tier boundaries
+        top_count = max(1, int(n * 0.3))      # Top 30%
+        lower_count = max(1, int(n * 0.3))    # Bottom 30%
+        mid_count = n - top_count - lower_count  # Rest
+        
+        return {
+            'top': ranked_dcas[:top_count],
+            'mid': ranked_dcas[top_count:top_count + mid_count] if mid_count > 0 else ranked_dcas[:1],
+            'lower': ranked_dcas[-lower_count:] if lower_count > 0 else ranked_dcas[-1:]
+        }
+    
+    def _allocate_to_tier(
+        self,
+        cases: List[Dict[str, Any]],
+        tier_dcas: List[Dict[str, Any]],
 # TODO: implement edge case handling

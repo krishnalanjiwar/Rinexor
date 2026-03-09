@@ -158,4 +158,5 @@ def main():
     print("  • Reports API - Analytics and dashboards")
     print("  • Complete DCA schemas - For frontend integration")
 
-# TODO: implement edge case handling
+if __name__ == "__main__":
+    main()
