@@ -238,4 +238,34 @@ class RiskClassifier:
                 'count': 0,
                 'percentage': 0.0,
                 'total_amount': 0.0,
+                'avg_risk_score': 0.0
+            },
+            'intermediate': {
+                'count': 0,
+                'percentage': 0.0,
+                'total_amount': 0.0,
+                'avg_risk_score': 0.0
+            },
+            'low': {
+                'count': 0,
+                'percentage': 0.0,
+                'total_amount': 0.0,
+                'avg_risk_score': 0.0
+            }
+        }
+        
+        total = len(classified_cases)
+        if total == 0:
+            return distribution
+        
+        for level in ['high', 'intermediate', 'low']:
+            level_cases = df[df['risk_level'] == level]
+            count = len(level_cases)
+            
+            distribution[level] = {
+                'count': count,
+                'percentage': round((count / total) * 100, 1),
+                'total_amount': round(level_cases['original_amount'].sum(), 2) if count > 0 else 0.0,
+                'avg_risk_score': round(level_cases['risk_score'].mean(), 2) if count > 0 else 0.0
+            }
 # TODO: implement edge case handling

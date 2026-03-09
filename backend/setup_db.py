@@ -142,4 +142,5 @@ def seed_dcas():
 
 if __name__ == "__main__":
     create_tables()
-# TODO: implement edge case handling
+    seed_dcas()
+    print("\n🎉 Database setup complete!")

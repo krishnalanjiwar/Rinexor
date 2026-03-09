@@ -122,4 +122,35 @@ class DCACapacityInfo(BaseSchema):
     def determine_capacity_status(cls, v, values):
         if 'utilization_percentage' in values:
             util = values['utilization_percentage']
+            if util >= 100:
+                return "overloaded" if util > 100 else "full"
+            elif util >= 90:
+                return "limited"
+            else:
+                return "available"
+        return v
+
+
+class DCAAllocationRequest(BaseSchema):
+    """Schema for DCA allocation requests"""
+    case_ids: List[str]
+    dca_id: Optional[str] = None  # If None, auto-allocate
+    allocation_strategy: Optional[str] = "intelligent"  # "intelligent", "performance_based", "capacity_based", "round_robin"
+    force_allocation: Optional[bool] = False  # Override capacity limits
+    
+    @validator('allocation_strategy')
+    def validate_strategy(cls, v):
+        valid_strategies = ["intelligent", "performance_based", "capacity_based", "round_robin"]
+        if v not in valid_strategies:
+            raise ValueError(f'Strategy must be one of: {", ".join(valid_strategies)}')
+        return v
+    
+    @validator('case_ids')
+    def validate_case_ids(cls, v):
+        if not v or len(v) == 0:
+            raise ValueError('At least one case ID must be provided')
+        if len(v) > 100:
+            raise ValueError('Cannot allocate more than 100 cases at once')
+        return v
+
 # TODO: implement edge case handling

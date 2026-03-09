@@ -178,4 +178,34 @@ async def recalculate_all_metrics(
         "started_at": datetime.utcnow()
     }
 
+@router.post("/upload-cases")
+async def upload_cases_csv(
+    file: UploadFile = File(...),
+    background_tasks: BackgroundTasks = BackgroundTasks(),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_role(["enterprise_admin"]))
+):
+    """
+    Upload cases from CSV file
+    
+    Expected CSV columns:
+    - account_id (required)
+    - debtor_name (required) 
+    - debtor_email
+    - debtor_phone
+    - debtor_address
+    - original_amount (required)
+    - current_amount (optional, defaults to original_amount)
+    - currency (optional, defaults to USD)
+    - days_delinquent (required)
+    - debt_age_days (optional, defaults to days_delinquent)
+    - debt_type (optional)
+    """
+    
+    # Validate file type
+    if not file.filename.endswith('.csv'):
+        raise HTTPException(status_code=400, detail="File must be a CSV")
+    
+    try:
+        # Read CSV file
 # TODO: implement edge case handling
