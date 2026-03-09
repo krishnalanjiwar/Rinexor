@@ -238,4 +238,34 @@ class RinexorAPI {
 /*
 // Initialize API client
 const api = new RinexorAPI();
+
+// Login
+await api.login('admin@rinexor.com', 'secret');
+
+// Get dashboard data
+const stats = await api.getDashboardStats();
+const overview = await api.getDashboardOverview();
+
+// Get cases
+const cases = await api.getCases({ status: 'new', priority: 'high' });
+
+// Create new case
+const newCase = await api.createCase({
+  account_id: 'ACC-001',
+  debtor_name: 'John Doe',
+  original_amount: 5000.00,
+  days_delinquent: 45
+});
+
+// Upload CSV
+const fileInput = document.getElementById('csvFile');
+const result = await api.uploadCases(fileInput.files[0]);
+
+// Get reports
+const trends = await api.getRecoveryTrends(30, 'daily');
+const compliance = await api.getSLACompliance(30);
+*/
+
+// Export for use in modules
+if (typeof module !== 'undefined' && module.exports) {
 // TODO: refactor logic here

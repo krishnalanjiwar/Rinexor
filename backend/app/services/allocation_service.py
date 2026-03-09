@@ -62,4 +62,36 @@ class AllocationService:
         score += workload_score * 0.1
         
         return score
+    
+    @staticmethod
+    def _calculate_capacity_score(dca: DCA, db: Session) -> float:
+        """Calculate capacity availability score"""
+        # Get current active cases for this DCA
+        current_cases = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id,
+            Case.status.in_([CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS])
+        ).scalar() or 0
+        
+        max_capacity = getattr(dca, 'max_concurrent_cases', 50)  # Default capacity
+        
+        if current_cases >= max_capacity:
+            return 0.0  # At capacity
+        
+        # Calculate utilization percentage
+        utilization = current_cases / max_capacity
+        
+        # Optimal utilization is around 70-80%
+        if utilization <= 0.7:
+            return 1.0  # Excellent capacity
+        elif utilization <= 0.8:
+            return 0.8  # Good capacity
+        elif utilization <= 0.9:
+            return 0.5  # Limited capacity
+        else:
+            return 0.2  # Very limited capacity
+    
+    @staticmethod
+    def _calculate_specialization_score(case_data: Dict[str, Any], dca: DCA) -> float:
+        """Calculate specialization match score"""
+        debt_type = case_data.get('debt_type', 'other')
 # TODO: implement edge case handling

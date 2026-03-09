@@ -122,4 +122,35 @@ try:
                 is_active=True
             )
             users.append(agent)
+            db.add(agent)
+            agent_counter += 1
+    
+    db.commit()
+    print(f"✅ Created {len(users)} users")
+    
+    # 3. Create Cases
+    cases = []
+    debtor_names = [
+        "John Smith", "Maria Garcia", "Robert Johnson", "Lisa Chen",
+        "David Williams", "Sarah Miller", "James Brown", "Emily Davis",
+        "Michael Wilson", "Jennifer Taylor", "Christopher Lee",
+        "Amanda Martinez", "Daniel Thompson", "Jessica Anderson"
+    ]
+    
+    # Case status distribution for demo
+    statuses = [
+        (CaseStatus.NEW, 3, None),
+        (CaseStatus.ASSIGNED, 5, dcas[0].id),
+        (CaseStatus.IN_PROGRESS, 4, dcas[1].id),
+        (CaseStatus.CONTACTED, 3, dcas[2].id),
+        (CaseStatus.PAYMENT_PROMISE, 2, dcas[3].id),
+        (CaseStatus.PARTIALLY_PAID, 1, dcas[0].id),
+        (CaseStatus.RESOLVED, 3, dcas[1].id),
+        (CaseStatus.ESCALATED, 2, None),
+    ]
+    
+    case_counter = 1
+    for status, count, dca_id in statuses:
+        for i in range(count):
+            debtor = random.choice(debtor_names)
 # TODO: implement edge case handling

@@ -97,4 +97,37 @@ async def get_dca(
 ):
     """Get a specific DCA by ID"""
     dca = db.query(DCA).filter(DCA.id == dca_id).first()
+    
+    if not dca:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="DCA not found"
+        )
+    
+    return dca
+
+
+@router.post("/", response_model=DCAResponse, status_code=status.HTTP_201_CREATED)
+async def create_dca(
+    dca_data: DCACreate,
+    db: Session = Depends(get_db)
+):
+    """Create a new DCA (Onboard New Agency)"""
+    # Check if code already exists
+    existing = db.query(DCA).filter(DCA.code == dca_data.code).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"DCA with code '{dca_data.code}' already exists"
+        )
+    
+    # Check if name already exists
+    existing_name = db.query(DCA).filter(DCA.name == dca_data.name).first()
+    if existing_name:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"DCA with name '{dca_data.name}' already exists"
+        )
+    
+    # Create new DCA
 # TODO: implement edge case handling
