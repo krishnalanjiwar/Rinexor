@@ -70,4 +70,4 @@ class CaseSearchParams(BaseSchema):
     days_delinquent_max: Optional[int] = None
     date_from: Optional[datetime] = None
     date_to: Optional[datetime] = None
-# TODO: implement edge case handling
+    search_text: Optional[str] = None

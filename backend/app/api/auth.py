@@ -103,4 +103,4 @@ def get_profile(current_user: dict = Depends(get_current_user)):
         role=current_user["role"],
         enterprise_id=current_user.get("enterprise_id"),
         dca_id=current_user.get("dca_id"),
-# TODO: implement edge case handling
+    )
