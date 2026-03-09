@@ -148,4 +148,34 @@ async def get_dca_performance_report(
         
         sla_compliance = (sla_compliant_cases / total_cases_with_sla * 100) if total_cases_with_sla > 0 else 0
         
+        performance_data.append({
+            "dca_id": dca.id,
+            "dca_name": dca.name,
+            "dca_code": dca.code,
+            "cases_assigned": cases_assigned,
+            "cases_resolved": cases_resolved,
+            "resolution_rate": round(resolution_rate, 2),
+            "amount_assigned": round(amount_assigned, 2),
+            "amount_recovered": round(amount_recovered, 2),
+            "recovery_rate": round(recovery_rate, 2),
+            "avg_resolution_days": round(avg_resolution_days, 1),
+            "sla_compliance": round(sla_compliance, 2),
+            "performance_score": dca.performance_score
+        })
+    
+    # Sort by performance score
+    performance_data.sort(key=lambda x: x["performance_score"], reverse=True)
+    
+    return {
+        "period_start": period_start.isoformat(),
+        "period_end": datetime.utcnow().isoformat(),
+        "period_days": period_days,
+        "total_dcas": len(performance_data),
+        "performance_data": performance_data
+    }
+
+
+@router.get("/recovery/trends")
+async def get_recovery_trends(
+    period_days: int = Query(90, description="Report period in days"),
 # TODO: implement edge case handling

@@ -91,4 +91,35 @@ try:
         hashed_password="$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",  # "secret"
         full_name="System Administrator",
         role=UserRole.ENTERPRISE_ADMIN,
+        is_active=True
+    )
+    users.append(admin)
+    db.add(admin)
+    
+    # Collection Manager
+    manager = User(
+        id=str(uuid.uuid4()),
+        email="manager@recoverai.com",
+        hashed_password="$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+        full_name="Collection Manager",
+        role=UserRole.COLLECTION_MANAGER,
+        is_active=True
+    )
+    users.append(manager)
+    db.add(manager)
+    
+    # DCA Agents (2 per DCA)
+    agent_counter = 1
+    for dca in dcas:
+        for j in range(2):  # 2 agents per DCA
+            agent = User(
+                id=str(uuid.uuid4()),
+                email=f"agent{agent_counter}@{dca.name.lower().replace(' ', '')}.com",
+                hashed_password="$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+                full_name=f"Agent {agent_counter} - {dca.name.split()[0]}",
+                role=UserRole.DCA_AGENT,
+                dca_id=dca.id,
+                is_active=True
+            )
+            users.append(agent)
 # TODO: implement edge case handling

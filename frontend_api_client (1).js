@@ -118,4 +118,34 @@ class RinexorAPI {
     return this.apiCall(`/dcas/${dcaId}`);
   }
 
+  async createDCA(dcaData) {
+    return this.apiCall('/dcas', {
+      method: 'POST',
+      body: JSON.stringify(dcaData)
+    });
+  }
+
+  async updateDCA(dcaId, updates) {
+    return this.apiCall(`/dcas/${dcaId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates)
+    });
+  }
+
+  async getDCAPerformance(dcaId) {
+    return this.apiCall(`/dcas/${dcaId}/performance`);
+  }
+
+  async getDCACases(dcaId) {
+    return this.apiCall(`/dcas/${dcaId}/cases`);
+  }
+
+  // AI & Analytics
+  async analyzeCase(caseData) {
+    return this.apiCall('/ai/analyze-case', {
+      method: 'POST',
+      body: JSON.stringify(caseData)
+    });
+  }
+
 // TODO: refactor logic here
