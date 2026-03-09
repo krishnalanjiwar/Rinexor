@@ -1,0 +1,11 @@
+debtor_name,original_amount,days_delinquent,credit_score,debtor_email,debtor_phone
+John Doe,15000,45,720,john@email.com,555-1234
+Jane Smith,50000,120,550,jane@email.com,555-5678
+Bob Wilson,5000,30,680,bob@email.com,555-9012
+Alice Brown,75000,180,480,alice@email.com,555-3456
+Charlie Davis,8000,60,650,charlie@email.com,555-7890
+Eve Johnson,25000,90,600,eve@email.com,555-2345
+Frank Miller,100000,200,450,frank@email.com,555-6789
+Grace Lee,12000,40,710,grace@email.com,555-0123
+Henry Park,35000,150,520,henry@email.com,555-4567
+Ivy Chen,6000,25,750,ivy@email.com,555-8901

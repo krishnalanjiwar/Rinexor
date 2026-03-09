@@ -28,4 +28,34 @@ class AIService:
         self.risk_classifier = None
         self.smart_allocator = None
         
+    def initialize(self):
+        """Initialize all AI components"""
+        from app.ml.recovery_model import RecoveryModel
+        from app.ml.priority_engine import PriorityEngine
+        from app.ml.pattern_detector import PatternDetector
+        from app.ml.feature_engineer import FeatureEngineer
+        from app.ml.risk_classifier import RiskClassifier
+        from app.ml.smart_allocator import SmartAllocator
+        
+        self.recovery_model = RecoveryModel()
+        self.priority_engine = PriorityEngine()
+        self.pattern_detector = PatternDetector()
+        self.feature_engineer = FeatureEngineer()
+        self.risk_classifier = RiskClassifier()
+        self.smart_allocator = SmartAllocator()
+        
+        # Try to load pre-trained model
+        try:
+            import os
+            model_path = "ml_models/recovery_model.pkl"
+            if os.path.exists(model_path):
+                self.recovery_model.load_model(model_path)
+                print("✅ Loaded pre-trained AI model")
+            else:
+                print("⚠️  No pre-trained model found, using rule-based")
+        except:
+            print("⚠️  Could not load AI model, using rule-based")
+    
+    def analyze_case(self, case_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
 # TODO: implement edge case handling
