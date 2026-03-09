@@ -168,4 +168,7 @@ sub get_working_dir {
 	} else {
 		require Cwd;
 		$working_dir = Cwd::cwd();
+	}
 
+	return $working_dir;
+}

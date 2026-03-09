@@ -308,4 +308,35 @@ except Exception as e:
             debtor_name TEXT NOT NULL,
             original_amount REAL NOT NULL,
             current_amount REAL NOT NULL,
+            days_delinquent INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'new',
+            priority TEXT DEFAULT 'medium',
+            recovery_score REAL DEFAULT 0.0,
+            dca_id TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )"""
+    ]
+    
+    for sql in basic_tables:
+        cursor.execute(sql)
+    
+    conn.commit()
+    
+    # Insert sample data
+    import uuid
+    cursor.execute("INSERT OR IGNORE INTO users (id, email, hashed_password, full_name, role) VALUES (?, ?, ?, ?, ?)",
+                  (str(uuid.uuid4()), "admin@recoverai.com", 
+                   "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
+                   "Admin User", "enterprise_admin"))
+    
+    cursor.execute("INSERT OR IGNORE INTO dcas (id, name, code, contact_person, email) VALUES (?, ?, ?, ?, ?)",
+                  (str(uuid.uuid4()), "Alpha Collections", "DCA-001", 
+                   "John Manager", "contact@alphacollections.com"))
+    
+    conn.commit()
+    
+    # Show tables
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()
 # TODO: implement edge case handling

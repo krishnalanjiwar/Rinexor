@@ -448,4 +448,34 @@ async def export_cases_report(
 ):
     """Export cases report in specified format"""
     
+    # Build query with filters
+    query = db.query(Case)
+    
+    if status:
+        query = query.filter(Case.status == status)
+    
+    if dca_id:
+        query = query.filter(Case.dca_id == dca_id)
+    
+    if date_from:
+        query = query.filter(Case.created_at >= date_from)
+    
+    if date_to:
+        query = query.filter(Case.created_at <= date_to)
+    
+    cases = query.all()
+    
+    # Prepare export data
+    export_data = []
+    for case in cases:
+        dca_name = ""
+        if case.dca_id:
+            dca = db.query(DCA).filter(DCA.id == case.dca_id).first()
+            dca_name = dca.name if dca else ""
+        
+        export_data.append({
+            "case_id": case.id,
+            "account_id": case.account_id,
+            "debtor_name": case.debtor_name,
+            "debtor_email": case.debtor_email,
 # TODO: implement edge case handling
