@@ -178,4 +178,34 @@ class RiskClassifier:
             return 'low'  # Near threshold boundaries
     
     def _generate_explanation(self, case_data: Dict[str, Any], 
+                            risk_level: str, risk_score: float) -> str:
+        """Generate human-readable explanation for classification"""
+        days = case_data.get('days_delinquent', 0)
+        amount = case_data.get('original_amount', 0)
+        
+        if risk_level == RiskLevel.HIGH:
+            if days > 120:
+                return f"High risk due to extended delinquency ({days} days) and amount (${amount:,.2f})"
+            elif amount > 50000:
+                return f"High risk due to large debt amount (${amount:,.2f})"
+            else:
+                return "High risk based on combined factors indicating difficulty in recovery"
+        elif risk_level == RiskLevel.INTERMEDIATE:
+            return f"Moderate risk with {days} days delinquent and ${amount:,.2f} debt"
+        else:
+            return f"Lower risk case with reasonable recovery potential"
+    
+    def _get_risk_factors(self, case_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Get individual risk factors with their contributions"""
+        days = case_data.get('days_delinquent', 0)
+        amount = case_data.get('original_amount', 0)
+        credit = case_data.get('credit_score', 650)
+        
+        factors = []
+        
+        if days > 90:
+            factors.append({
+                'factor': 'Delinquency Duration',
+                'value': f'{days} days',
+                'impact': 'high',
 # TODO: implement edge case handling

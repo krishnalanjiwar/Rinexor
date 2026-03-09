@@ -268,4 +268,10 @@ const compliance = await api.getSLACompliance(30);
 
 // Export for use in modules
 if (typeof module !== 'undefined' && module.exports) {
-// TODO: refactor logic here
+  module.exports = RinexorAPI;
+}
+
+// Global access for browser
+if (typeof window !== 'undefined') {
+  window.RinexorAPI = RinexorAPI;
+}

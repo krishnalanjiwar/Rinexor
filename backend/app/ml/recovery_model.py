@@ -122,4 +122,35 @@ class RecoveryModel:
         """Fallback rule-based prediction"""
         recovery_score = self._calculate_rule_based_score(case_data)
         recovery_prob = recovery_score / 100
+        
+        return {
+            'recovery_probability': recovery_prob,
+            'recovery_score': recovery_score,
+            'confidence': 'medium',
+            'key_factors': ['Amount', 'Days Delinquent'],
+            'risk_factors': ['Using rule-based fallback'],
+            'recommended_action': 'Standard collection process'
+        }
+    
+    def _calculate_rule_based_score(self, case_data: Dict[str, Any]) -> float:
+        """Simple rule-based scoring"""
+        score = 70.0  # Base score
+        
+        # Rule 1: Debt age penalty
+        days_delinquent = case_data.get("days_delinquent", 0)
+        if days_delinquent > 180:
+            score -= 40
+        elif days_delinquent > 90:
+            score -= 25
+        elif days_delinquent > 60:
+            score -= 15
+        elif days_delinquent > 30:
+            score -= 5
+        
+        # Rule 2: Amount penalty
+        amount = case_data.get("original_amount", 0)
+        if amount > 50000:
+            score -= 30
+        elif amount > 25000:
+            score -= 20
 # TODO: implement edge case handling

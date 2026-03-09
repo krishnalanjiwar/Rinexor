@@ -153,4 +153,35 @@ try:
     for status, count, dca_id in statuses:
         for i in range(count):
             debtor = random.choice(debtor_names)
+            amount = round(random.uniform(1500, 35000), 2)
+            days_delinquent = random.randint(30, 150)
+            
+            # Calculate recovery score
+            base_score = random.uniform(0.3, 0.9)
+            if days_delinquent > 90:
+                base_score *= 0.7
+            if amount > 20000:
+                base_score *= 0.8
+            
+            recovery_score = round(base_score, 2)
+            
+            # Determine band and priority
+            if recovery_score >= 0.7:
+                band = RecoveryScoreBand.HIGH
+                priority = CasePriority.HIGH
+            elif recovery_score >= 0.4:
+                band = RecoveryScoreBand.MEDIUM
+                priority = CasePriority.MEDIUM
+            else:
+                band = RecoveryScoreBand.LOW
+                priority = CasePriority.LOW
+            
+            # Create case
+            case = Case(
+                id=str(uuid.uuid4()),
+                account_id=f"ACC-{case_counter:05d}",
+                debtor_name=debtor,
+                debtor_email=f"{debtor.lower().replace(' ', '.')}@example.com",
+                debtor_phone=f"+1-555-{8000 + case_counter}",
+                original_amount=amount,
 # TODO: implement edge case handling
