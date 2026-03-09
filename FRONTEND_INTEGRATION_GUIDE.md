@@ -238,4 +238,34 @@ class RinexorAPI {
 
 // Usage
 const api = new RinexorAPI();
+await api.login('admin@rinexor.com', 'secret');
+const cases = await api.apiCall('/cases');
+```
+
+### **📋 Cases Management**
+```javascript
+// Get cases with filtering
+const getCases = async (filters = {}) => {
+  const params = new URLSearchParams(filters);
+  return api.apiCall(`/cases?${params}`);
+};
+
+// Create new case
+const createCase = async (caseData) => {
+  return api.apiCall('/cases', {
+    method: 'POST',
+    body: JSON.stringify(caseData)
+  });
+};
+
+// Update case status
+const updateCase = async (caseId, updates) => {
+  return api.apiCall(`/cases/${caseId}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates)
+  });
+};
+```
+
+### **📊 Dashboard Data**
 

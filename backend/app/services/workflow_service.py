@@ -94,4 +94,36 @@ class WorkflowService:
         
         # Get available DCAs
         available_dcas = db.query(DCA).filter(
+            DCA.is_active == True,
+            DCA.is_accepting_cases == True
+        ).all()
+        
+        if not available_dcas:
+            return None
+        
+        # Use allocation service for intelligent assignment
+        return AllocationService.find_best_dca(case_data, available_dcas, db)
+    
+    @staticmethod
+    def _calculate_initial_recovery_score(case_data: Dict[str, Any]) -> float:
+        """Calculate initial recovery score using simple rules"""
+        amount = case_data.get('original_amount', 0)
+        days_delinquent = case_data.get('days_delinquent', 0)
+        
+        # Base score starts at 50%
+        score = 50.0
+        
+        # Adjust based on amount (higher amounts = higher recovery chance)
+        if amount >= 50000:
+            score += 20
+        elif amount >= 10000:
+            score += 10
+        elif amount < 1000:
+            score -= 15
+        
+        # Adjust based on delinquency (fresher debt = higher recovery)
+        if days_delinquent <= 30:
+            score += 25
+        elif days_delinquent <= 90:
+            score += 10
 # TODO: implement edge case handling

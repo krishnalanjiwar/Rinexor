@@ -118,4 +118,34 @@ class WorkflowScheduler:
             from app.task.sla_tasks import daily_escalation_check
             result = daily_escalation_check()
             logger.info(f"🚨 Manual escalation check completed: {result}")
+            return result
+        except Exception as e:
+            logger.error(f"❌ Manual escalation check failed: {e}")
+            return {"status": "error", "message": str(e)}
+    
+    def get_scheduler_status(self):
+        """Get current scheduler status"""
+        return {
+            "is_running": self.is_running,
+            "scheduler_type": "demo_mode",
+            "last_check": datetime.utcnow().isoformat(),
+            "available_tasks": [
+                "sla_breach_check",
+                "case_escalation", 
+                "sla_status_update",
+                "daily_sla_report",
+                "breach_cleanup"
+            ]
+        }
+
+
+# Global scheduler instance
+workflow_scheduler = WorkflowScheduler()
+
+
+def start_background_scheduler():
+    """Start the global scheduler"""
+    workflow_scheduler.start_scheduler()
+
+
 # TODO: implement edge case handling

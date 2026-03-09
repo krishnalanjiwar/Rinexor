@@ -148,4 +148,34 @@ class AIService:
         try:
             # Convert to dataframe
             df = pd.DataFrame(training_data)
+            
+            # Extract features
+            X = self.feature_engineer.create_feature_dataframe(training_data)
+            
+            # Target variable (recovery rate)
+            if 'recovery_rate' in df.columns:
+                y = df['recovery_rate']
+            else:
+                # Mock target for demo
+                y = pd.Series([0.7] * len(X))  # 70% average recovery
+            
+            # Train model
+            result = self.recovery_model.train(X, y, model_type='gradient_boosting')
+            
+            # Save model
+            import os
+            os.makedirs('ml_models', exist_ok=True)
+            self.recovery_model.save_model('ml_models/recovery_model.pkl')
+            
+            return {
+                'success': True,
+                'training_result': result,
+                'model_saved': True,
+                'samples_trained': len(X)
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e),
 # TODO: implement edge case handling
