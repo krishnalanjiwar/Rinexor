@@ -68,4 +68,38 @@ async def get_current_active_user(current_user: Dict[str, Any] = Depends(get_cur
     return current_user
 
 def require_role(allowed_roles: list):
-# TODO: implement edge case handling
+    """Dependency factory for role-based access"""
+    def role_checker(current_user: Dict[str, Any] = Depends(get_current_active_user)):
+        if current_user.get("role") not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions"
+            )
+        return current_user
+    return role_checker
+
+# Simple user validation (for demo)
+def validate_user_credentials(username: str, password: str) -> Optional[Dict[str, Any]]:
+    """Validate user credentials (demo version)"""
+    # This is a demo version - in real app, check against database
+    demo_users = {
+        "admin@recoverai.com": {
+            "id": "user_001",
+            "email": "admin@recoverai.com",
+            "role": "enterprise_admin",
+            "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW"  # "secret"
+        },
+        "agent@alphacollections.com": {
+            "id": "user_002", 
+            "email": "agent@alphacollections.com",
+            "role": "dca_agent",
+            "dca_id": "dca_001",
+            "hashed_password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW"  # "secret"
+        }
+    }
+    
+    if username in demo_users:
+        user = demo_users[username]
+        if verify_password(password, user["hashed_password"]):
+            return user
+    return None
