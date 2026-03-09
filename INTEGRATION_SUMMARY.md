@@ -179,3 +179,33 @@ All dashboard pages now feature:
 - Loading spinners during data fetch
 - Graceful fallbacks for missing data
 
+---
+
+## 9. Backend Endpoints Used
+
+The frontend connects to these backend endpoints:
+
+```
+POST   /api/auth/login                    → Login user
+GET    /api/cases                         → List cases
+GET    /api/cases/{case_id}               → Get single case
+PUT    /api/cases/{case_id}               → Update case
+GET    /api/dashboard/kpi                 → Get KPI metrics
+GET    /api/dcas                          → List all DCAs
+GET    /api/dashboard/enterprises         → List enterprises
+GET    /api/audit                         → Get audit events
+POST   /api/cases/upload                  → Bulk upload cases
+POST   /api/cases/upload-csv              → CSV upload
+```
+
+---
+
+## 10. Authentication Flow
+
+1. User selects role on RoleSelection page
+2. User navigates to Login page with role parameter
+3. Pre-filled credentials appear (demo mode)
+4. User submits credentials
+5. Frontend calls `apiClient.login(email, password)`
+6. Backend validates and returns JWT token
+

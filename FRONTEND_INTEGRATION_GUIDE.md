@@ -148,4 +148,34 @@ GET /api/v1/reports/performance/dcas?period_days=30&dca_id=123
 GET /api/v1/reports/recovery/trends?period_days=90&granularity=daily
 
 // SLA Compliance
+GET /api/v1/reports/sla/compliance?period_days=30
+
+// Portfolio Analysis
+GET /api/v1/reports/portfolio/analysis
+
+// Export Cases
+GET /api/v1/reports/export/cases?format=json&status=new&date_from=2024-01-01
+```
+
+### **👑 Admin Functions**
+```javascript
+// Get All Users
+GET /api/v1/admin/users?skip=0&limit=100
+
+// Create User
+POST /api/v1/admin/users
+Body: {
+  "email": "newuser@company.com",
+  "password": "password123",
+  "full_name": "New User",
+  "role": "collection_manager"
+}
+
+// Upload Cases CSV
+POST /api/v1/admin/upload-cases
+Body: FormData with file
+
+// Get CSV Template
+GET /api/v1/admin/upload-template
+
 

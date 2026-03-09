@@ -58,4 +58,4 @@ def get_cases():
 if __name__ == "__main__":
     print("🚀 Starting server on http://127.0.0.1:9000")
     print("📚 API docs: http://127.0.0.1:9000/docs")
-# TODO: implement edge case handling
+    uvicorn.run(app, host="127.0.0.1", port=9000)

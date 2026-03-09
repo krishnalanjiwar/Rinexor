@@ -106,4 +106,40 @@ def seed_dcas():
             "specialization": ["small_business", "auto_loans"],
             "sla_compliance_rate": 0.82,
             "is_active": True,
+            "is_accepting_cases": True,
+            "onboarded_date": datetime(2024, 5, 1),
+            "last_performance_update": datetime.now()
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Epsilon Collections Agency",
+            "code": "ECA005",
+            "contact_person": "Vijay Menon",
+            "email": "vijay@epsiloncollect.in",
+            "phone": "+91-9876543214",
+            "address": "Chennai, Tamil Nadu",
+            "performance_score": 0.82,
+            "recovery_rate": 0.68,
+            "avg_resolution_days": 48.5,
+            "max_concurrent_cases": 80,
+            "current_active_cases": 30,
+            "specialization": ["mortgages", "personal_loans"],
+            "sla_compliance_rate": 0.90,
+            "is_active": True,
+            "is_accepting_cases": True,
+            "onboarded_date": datetime(2024, 2, 28),
+            "last_performance_update": datetime.now()
+        }
+    ]
+    
+    for dca_data in sample_dcas:
+        dca = DCA(**dca_data)
+        db.add(dca)
+    
+    db.commit()
+    print(f"✅ Seeded {len(sample_dcas)} DCAs successfully!")
+    db.close()
+
+if __name__ == "__main__":
+    create_tables()
 # TODO: implement edge case handling
