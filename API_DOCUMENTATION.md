@@ -72,4 +72,41 @@
 
 ### WorkflowService
 - Automated case processing and state management
+- SLA deadline calculation
+- Case priority assignment
+- Status transition validation
+
+### AllocationService  
+- Intelligent DCA allocation based on:
+  - Capacity availability
+  - Performance scores
+  - Specialization matching
+  - Current workload
+- Bulk allocation strategies
+- Allocation recommendations
+
+### NotificationService
+- SLA breach alerts
+- Case allocation notifications
+- Status update notifications
+- Daily summary reports
+- Performance alerts
+
+### SLA Monitoring
+- Automated breach detection
+- Case escalation
+- Compliance tracking
+- Background task scheduling
+
+## 🎯 Key Features:
+- ✅ Complete case workflow automation
+- ✅ AI-powered recovery scoring
+- ✅ Intelligent DCA allocation
+- ✅ Real-time SLA monitoring
+- ✅ Comprehensive reporting
+- ✅ Role-based access control
+- ✅ Full audit trails
+- ✅ **CSV Bulk Upload** - Enterprise admins can upload cases from CSV files
+- ✅ **Template Generation** - Download CSV templates with sample data
+
 

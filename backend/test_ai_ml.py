@@ -100,4 +100,5 @@ print("   1. Intelligent Recovery Prediction")
 print("   2. Smart Case Prioritization")
 print("   3. Pattern Detection & Insights")
 print("   4. Portfolio-level Analysis")
-# TODO: implement edge case handling
+print("   5. Explainable AI (Key Factors, Risks)")
+print("   6. Model Training Capability")
