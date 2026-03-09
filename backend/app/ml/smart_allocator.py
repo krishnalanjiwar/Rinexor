@@ -286,4 +286,36 @@ class SmartAllocator:
                     
                     # Track risk level counts
                     if risk_level not in allocation_map[dca_id]['risk_levels']:
+                        allocation_map[dca_id]['risk_levels'][risk_level] = []
+                    allocation_map[dca_id]['risk_levels'][risk_level].append(case)
+                    
+                    # Decrease capacity
+                    remaining_capacity[dca_id] -= 1
+                    
+                    break
+                
+                dca_index += 1
+                attempts += 1
+            
+            dca_index += 1  # Move to next DCA for round-robin
+        
+        return allocation_map
+    
+    def _generate_preview(
+        self, 
+        allocation_map: Dict[str, Dict], 
+        ranked_dcas: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """Generate allocation preview list"""
+        preview = []
+        
+        for dca_id, data in allocation_map.items():
+            dca_info = data['dca_info']
+            cases = data['cases']
+            risk_levels = data['risk_levels']
+            
+            total_amount = sum(c.get('original_amount', 0) for c in cases)
+            
+            preview_item = {
+                'dca_id': dca_id,
 # TODO: implement edge case handling

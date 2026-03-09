@@ -268,4 +268,34 @@ async def upload_cases_csv(
                     "debt_type": str(row.get('debt_type', 'other')) if pd.notna(row.get('debt_type')) else 'other'
                 }
                 
+                # Process through workflow
+                processed_data = WorkflowService.process_new_case(case_data, db)
+                
+                # Create case
+                case = Case(
+                    id=str(uuid.uuid4()),
+                    account_id=case_data["account_id"],
+                    debtor_name=case_data["debtor_name"],
+                    debtor_email=case_data["debtor_email"],
+                    debtor_phone=case_data["debtor_phone"],
+                    debtor_address=case_data["debtor_address"],
+                    original_amount=case_data["original_amount"],
+                    current_amount=case_data["current_amount"],
+                    currency=case_data["currency"],
+                    days_delinquent=case_data["days_delinquent"],
+                    debt_age_days=case_data["debt_age_days"],
+                    status=processed_data["status"],
+                    priority=processed_data["priority"],
+                    recovery_score=processed_data["recovery_score"],
+                    recovery_score_band="high" if processed_data["recovery_score"] >= 70 else "medium" if processed_data["recovery_score"] >= 40 else "low",
+                    dca_id=processed_data["dca_id"],
+                    allocated_by=current_user["id"] if processed_data["dca_id"] else None,
+                    allocation_date=datetime.utcnow() if processed_data["dca_id"] else None,
+                    ml_features={},
+                    sla_contact_deadline=processed_data["sla_contact_deadline"],
+                    sla_resolution_deadline=processed_data["sla_resolution_deadline"],
+                    created_at=datetime.utcnow()
+                )
+                
+                db.add(case)
 # TODO: implement edge case handling

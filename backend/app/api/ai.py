@@ -370,4 +370,35 @@ async def confirm_allocation(
                     recovery_score=case_data.get('recovery_probability', 0) * 100,
                     ml_features={
                         'risk_level': case_data.get('risk_level'),
+                        'risk_score': case_data.get('risk_score'),
+                        'confidence': case_data.get('confidence')
+                    },
+                    created_at=datetime.now()
+                )
+                db.add(new_case)
+                created_cases += 1
+        
+        db.commit()
+        
+        # Now allocate cases to DCAs
+        allocation_result = ai_service.confirm_and_allocate(
+            allocation_preview,
+            classified_cases,
+            db,
+            current_user.get('id', 'system')
+        )
+        
+        # Clean up cache
+        del _analysis_cache[analysis_id]
+        
+        return {
+            "success": True,
+            "message": "Cases allocated successfully",
+            "cases_created": created_cases,
+            "allocated_count": allocation_result.get('allocated_count', 0),
+            "failed_count": allocation_result.get('failed_count', 0),
+            "allocation_timestamp": allocation_result.get('allocation_timestamp')
+        }
+    except HTTPException:
+        raise
 # TODO: implement edge case handling

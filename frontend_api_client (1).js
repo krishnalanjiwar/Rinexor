@@ -208,4 +208,34 @@ class RinexorAPI {
 
   async uploadCases(file) {
     const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch(`${this.baseURL}/admin/upload-cases`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.token}`
+      },
+      body: formData
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
+
+  async getUploadTemplate() {
+    return this.apiCall('/admin/upload-template');
+  }
+
+  async getSystemStats() {
+    return this.apiCall('/admin/system-stats');
+  }
+}
+
+// Usage Examples:
+/*
+// Initialize API client
+const api = new RinexorAPI();
 // TODO: refactor logic here
