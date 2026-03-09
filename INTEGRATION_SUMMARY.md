@@ -208,4 +208,34 @@ POST   /api/cases/upload-csv              → CSV upload
 4. User submits credentials
 5. Frontend calls `apiClient.login(email, password)`
 6. Backend validates and returns JWT token
+7. Frontend stores token in localStorage
+8. User is redirected to dashboard
+9. All subsequent requests include Bearer token in Authorization header
+10. Token is automatically cleared on logout or auth failure
+
+---
+
+## 11. Token Management
+
+- **Storage:** localStorage under `rinexor_token` key
+- **Transmission:** `Authorization: Bearer {token}` header
+- **Expiry:** 30 minutes (backend configured)
+- **Refresh:** Auto-logout on 401 Unauthorized response
+
+---
+
+## 12. Data Flow Example
+
+### Cases Page Load
+```
+1. Component mounts
+2. useEffect calls apiClient.getCases()
+3. API request sent with Bearer token
+4. Backend validates token and filters by user role
+5. Cases data returned in JSON
+6. Frontend converts API objects to CaseRow format
+7. Cases rendered in table with real data
+8. User can interact with real case data
+```
+
 

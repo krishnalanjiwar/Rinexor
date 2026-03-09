@@ -62,4 +62,36 @@ except Exception as e:
 # Register Users router (Qdrant Cloud backed)
 try:
     from app.api import users
+    app.include_router(users.router, prefix="/api/users", tags=["users"])
+    logger.info("✅ Users router registered (Qdrant Cloud)")
+except Exception as e:
+    logger.warning(f"⚠️ Users router not available: {e}")
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on startup"""
+    logger.info("🚀 Starting Rinexor Backend...")
+
+    # Initialize Qdrant Cloud collections
+    try:
+        from app.core.qdrant_db import get_qdrant_client, ensure_collections
+        client = get_qdrant_client()
+        ensure_collections(client)
+        logger.info("✅ Qdrant Cloud connected and collections ready")
+    except Exception as e:
+        logger.warning(f"⚠️ Qdrant Cloud warning (non-critical): {e}")
+
+    # Seed default users in SQLite
+    try:
+        from app.services.sqlite_user_service import seed_default_users
+        seed_default_users()
+        logger.info("✅ Default users ready in SQLite")
+    except Exception as e:
+        logger.warning(f"⚠️ User seeding warning: {e}")
+
+    # Initialize AI service (optional - works without it)
+    try:
+        from app.services.ai_service import AIService
+        ai_service = AIService()
 # TODO: implement edge case handling

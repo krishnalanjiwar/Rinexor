@@ -64,4 +64,37 @@ class DCAResponse(BaseModel):
     recovery_rate: float
     avg_resolution_days: float
     max_concurrent_cases: int
+    current_active_cases: int
+    specialization: Optional[List[str]]
+    sla_compliance_rate: float
+    is_active: bool
+    is_accepting_cases: bool
+    onboarded_date: Optional[datetime]
+    
+    class Config:
+        from_attributes = True
+
+
+@router.get("/", response_model=List[DCAResponse])
+async def get_all_dcas(
+    active_only: bool = False,
+    db: Session = Depends(get_db)
+):
+    """Get all DCAs, optionally filtered by active status"""
+    query = db.query(DCA)
+    
+    if active_only:
+        query = query.filter(DCA.is_active == True)
+    
+    dcas = query.order_by(DCA.performance_score.desc()).all()
+    return dcas
+
+
+@router.get("/{dca_id}", response_model=DCAResponse)
+async def get_dca(
+    dca_id: str,
+    db: Session = Depends(get_db)
+):
+    """Get a specific DCA by ID"""
+    dca = db.query(DCA).filter(DCA.id == dca_id).first()
 # TODO: implement edge case handling
