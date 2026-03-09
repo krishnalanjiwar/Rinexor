@@ -60,4 +60,35 @@ class DCAResponse(DCABase, IDSchema, TimestampSchema):
     performance_score: float
     recovery_rate: float
     avg_resolution_days: Optional[float] = None
+    current_active_cases: Optional[int] = 0
+    sla_compliance_rate: Optional[float] = None
+    is_active: bool
+    is_accepting_cases: bool
+    onboarded_date: Optional[datetime] = None
+    last_performance_update: Optional[datetime] = None
+
+
+class DCAPerformanceMetrics(BaseSchema):
+    """Schema for DCA performance metrics"""
+    total_cases_assigned: int
+    total_cases_resolved: int
+    total_amount_assigned: float
+    total_amount_recovered: float
+    recovery_rate: float
+    avg_resolution_days: float
+    sla_compliance_rate: float
+    performance_score: float
+    
+    # Time-based metrics
+    cases_this_month: int
+    recovery_this_month: float
+    cases_last_month: int
+    recovery_last_month: float
+    
+    # Trend indicators
+    recovery_trend: str  # "improving", "declining", "stable"
+    performance_trend: str
+    
+    # Breakdown by case priority
+    high_priority_recovery_rate: Optional[float] = None
 # TODO: implement edge case handling

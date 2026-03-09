@@ -178,4 +178,34 @@ async def get_dca_performance_report(
 @router.get("/recovery/trends")
 async def get_recovery_trends(
     period_days: int = Query(90, description="Report period in days"),
+    granularity: str = Query("daily", description="Data granularity: daily, weekly, monthly"),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get recovery trends over time"""
+    
+    period_start = datetime.utcnow() - timedelta(days=period_days)
+    
+    # Determine date grouping based on granularity
+    if granularity == "weekly":
+        date_format = "%Y-%W"
+        date_trunc = func.strftime('%Y-%W', Case.resolved_date)
+    elif granularity == "monthly":
+        date_format = "%Y-%m"
+        date_trunc = func.strftime('%Y-%m', Case.resolved_date)
+    else:  # daily
+        date_format = "%Y-%m-%d"
+        date_trunc = func.date(Case.resolved_date)
+    
+    # Recovery trends
+    recovery_trends = db.query(
+        date_trunc.label('period'),
+        func.count(Case.id).label('cases_resolved'),
+        func.sum(Case.original_amount - Case.current_amount).label('amount_recovered'),
+        func.avg(Case.recovery_score).label('avg_recovery_score')
+    ).filter(
+        Case.resolved_date >= period_start,
+        Case.status == CaseStatus.RESOLVED
+    ).group_by(date_trunc).order_by(date_trunc).all()
+    
 # TODO: implement edge case handling

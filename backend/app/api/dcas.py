@@ -130,4 +130,37 @@ async def create_dca(
         )
     
     # Create new DCA
+    new_dca = DCA(
+        id=str(uuid.uuid4()),
+        name=dca_data.name,
+        code=dca_data.code,
+        contact_person=dca_data.contact_person,
+        email=dca_data.email,
+        phone=dca_data.phone,
+        address=dca_data.address,
+        max_concurrent_cases=dca_data.max_concurrent_cases,
+        specialization=dca_data.specialization or [],
+        # Initialize with zero performance (new agency)
+        performance_score=0.0,
+        recovery_rate=0.0,
+        avg_resolution_days=0.0,
+        current_active_cases=0,
+        sla_compliance_rate=0.0,
+        is_active=True,
+        is_accepting_cases=True,
+        onboarded_date=datetime.now(),
+        last_performance_update=datetime.now()
+    )
+    
+    db.add(new_dca)
+    db.commit()
+    db.refresh(new_dca)
+    
+    return new_dca
+
+
+@router.put("/{dca_id}", response_model=DCAResponse)
+async def update_dca(
+    dca_id: str,
+    dca_data: DCAUpdate,
 # TODO: implement edge case handling

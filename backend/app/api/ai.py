@@ -184,4 +184,35 @@ async def prioritize_cases(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prioritization failed: {str(e)}")
+
+
+# ============== NEW RISK-BASED ALLOCATION ENDPOINTS ==============
+
+from fastapi import UploadFile, File
+
+# Store for temporary file analysis results (in production, use Redis or database)
+_analysis_cache: Dict[str, Dict[str, Any]] = {}
+
+
+@router.post("/upload-cases")
+async def upload_cases_file(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_optional_user)
+):
+    """
+    Upload a CSV or Excel file containing case data.
+    Returns parsed case data with validation status.
+    """
+    try:
+        # Read file content
+        content = await file.read()
+        filename = file.filename or "upload.csv"
+        
+        # Parse file
+        result = ai_service.parse_uploaded_file(content, filename)
+        
+        if not result['success']:
+            raise HTTPException(status_code=400, detail=result.get('error', 'File parsing failed'))
+        
 # TODO: implement edge case handling
