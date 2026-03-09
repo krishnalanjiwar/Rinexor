@@ -119,3 +119,33 @@ DCA User: dca@demo.com / dca123
 - Dynamic top performing agencies list from backend DCA data
 - Loading states for both KPIs and agency list
 
+**Real-time Metrics:**
+- Total outstanding amount (calculated from case data)
+- Active cases from backend
+- Recovery rate from DCA performance scores
+- SLA breaches from DCA data
+
+---
+
+## 6. Agencies (DCA) List Integration
+
+### File Modified: `src/pages/dashboard/Agencies.tsx`
+
+**Changes Made:**
+- Integrated `apiClient.getDCAs()` for super admin view
+- Convert DCA objects to agency table format:
+  - Performance score → Recovery Rate %
+  - SLA breach data → SLA Compliance %
+  - Active + resolved cases → Total cases
+  - Average resolution days → Avg Resolution Time
+- Loading state with spinner
+- Error handling with retry
+- Role-based DCA filtering (enterprise admin sees only assigned DCAs)
+
+**Backend Data Mapping:**
+- `dca.performance_score` → Recovery Rate
+- `dca.sla_breaches` → SLA Compliance calculation
+- `dca.active_cases + dca.resolved_cases` → Total cases
+- `dca.average_resolution_days` → Resolution time
+
+

@@ -29,4 +29,35 @@ class DCABase(BaseSchema):
         if not v or len(v.strip()) < 2:
             raise ValueError('DCA name must be at least 2 characters')
         return v.strip()
+
+
+class DCACreate(DCABase):
+    """Schema for creating a new DCA"""
+    pass
+
+
+class DCAUpdate(BaseSchema):
+    """Schema for updating an existing DCA"""
+    name: Optional[str] = None
+    contact_person: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    specialization: Optional[List[str]] = None
+    max_concurrent_cases: Optional[int] = None
+    is_active: Optional[bool] = None
+    is_accepting_cases: Optional[bool] = None
+    
+    @validator('name')
+    def validate_name(cls, v):
+        if v is not None and len(v.strip()) < 2:
+            raise ValueError('DCA name must be at least 2 characters')
+        return v.strip() if v else v
+
+
+class DCAResponse(DCABase, IDSchema, TimestampSchema):
+    """Schema for DCA API responses"""
+    performance_score: float
+    recovery_rate: float
+    avg_resolution_days: Optional[float] = None
 # TODO: implement edge case handling

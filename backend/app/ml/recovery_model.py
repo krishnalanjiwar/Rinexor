@@ -60,4 +60,35 @@ class RecoveryModel:
         self.is_trained = True
         
         # Calculate training metrics
+        train_score = self.model.score(X_train, y_train)
+        test_score = self.model.score(X_test, y_test)
+        
+        return {
+            'model_type': model_type,
+            'train_score': train_score,
+            'test_score': test_score,
+            'feature_importance': self.get_feature_importance()
+        }
+    
+    def predict(self, case_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Predict recovery probability for a single case
+        """
+        if not self.is_trained:
+            return self._predict_with_rule_based(case_data)
+        
+        try:
+            from app.ml.feature_engineer import FeatureEngineer
+            
+            # Extract features
+            features = FeatureEngineer.extract_features(case_data)
+            
+            # Create dataframe with same columns as training
+            features_df = pd.DataFrame([features])
+            
+            # Ensure all columns exist
+            for col in self.feature_columns:
+                if col not in features_df.columns:
+                    features_df[col] = 0
+            
 # TODO: implement edge case handling
