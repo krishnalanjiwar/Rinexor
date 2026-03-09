@@ -58,4 +58,34 @@ async def get_dashboard_overview(
     month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     cases_this_month = db.query(func.count(Case.id)).filter(
         Case.created_at >= month_start
+    ).scalar() or 0
+    
+    return {
+        "total_cases": total_cases,
+        "total_amount": round(total_amount, 2),
+        "recovered_amount": round(recovered_amount, 2),
+        "recovery_rate": round(recovery_rate, 2),
+        "active_dcas": active_dcas,
+        "sla_breaches": sla_breaches,
+        "cases_this_month": cases_this_month,
+        "status_breakdown": status_breakdown,
+        "last_updated": datetime.utcnow().isoformat()
+    }
+
+
+@router.get("/performance/dcas")
+async def get_dca_performance_report(
+    period_days: int = Query(30, description="Report period in days"),
+    dca_id: Optional[str] = Query(None, description="Specific DCA ID"),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get DCA performance report"""
+    
+    period_start = datetime.utcnow() - timedelta(days=period_days)
+    
+    # Base query
+    query = db.query(DCA).filter(DCA.is_active == True)
+    
+    if dca_id:
 # TODO: implement edge case handling

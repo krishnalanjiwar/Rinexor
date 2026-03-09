@@ -58,4 +58,34 @@ class RinexorAPI {
       }
       throw new Error(`API call failed: ${response.statusText}`);
     }
+
+    return response.json();
+  }
+
+  // Cases Management
+  async getCases(filters = {}) {
+    const params = new URLSearchParams(filters);
+    return this.apiCall(`/cases?${params}`);
+  }
+
+  async getCase(caseId) {
+    return this.apiCall(`/cases/${caseId}`);
+  }
+
+  async createCase(caseData) {
+    return this.apiCall('/cases', {
+      method: 'POST',
+      body: JSON.stringify(caseData)
+    });
+  }
+
+  async updateCase(caseId, updates) {
+    return this.apiCall(`/cases/${caseId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updates)
+    });
+  }
+
+  async addCaseNote(caseId, noteData) {
+    return this.apiCall(`/cases/${caseId}/notes`, {
 // TODO: refactor logic here

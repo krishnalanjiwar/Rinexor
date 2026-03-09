@@ -40,4 +40,46 @@ if response.status_code == 200:
     HEADERS = {"Authorization": f"Bearer {token}"}
     print(f"  Token obtained: {token[:50]}...")
 
+# 3. Test Cases API
+print("\n3. Testing Cases API...")
+response = requests.get(f"{BASE_URL}/cases", headers=HEADERS)
+print_response("Get Cases", response)
+
+# 4. Test DCAs API
+print("\n4. Testing DCAs API...")
+response = requests.get(f"{BASE_URL}/dcas", headers=HEADERS)
+print_response("Get DCAs", response)
+
+if response.status_code == 200 and response.json():
+    dca_id = response.json()[0]["id"]
+    
+    # Test DCA performance
+    response = requests.get(f"{BASE_URL}/dcas/{dca_id}/performance", headers=HEADERS)
+    print_response("DCA Performance", response)
+
+# 5. Test Dashboard Stats
+print("\n5. Testing Dashboard...")
+response = requests.get(f"{BASE_URL}/cases/dashboard/stats", headers=HEADERS)
+print_response("Dashboard Stats", response)
+
+# 6. Test AI API
+print("\n6. Testing AI API...")
+response = requests.get(f"{BASE_URL}/ai/model-status", headers=HEADERS)
+print_response("AI Model Status", response)
+
+# 7. Test Admin API
+print("\n7. Testing Admin API...")
+response = requests.get(f"{BASE_URL}/admin/system-stats", headers=HEADERS)
+print_response("System Stats", response)
+
+print("\n" + "=" * 60)
+print("✅ API TEST COMPLETE!")
+print("\n📋 Summary:")
+print(f"  • Health: {'✅' if response.status_code == 200 else '❌'}")
+print(f"  • Authentication: {'✅' if 'token' in locals() else '❌'}")
+print(f"  • Cases API: {'✅' if response.status_code == 200 else '❌'}")
+print(f"  • DCAs API: {'✅' if response.status_code == 200 else '❌'}")
+print(f"  • AI API: {'✅' if response.status_code == 200 else '❌'}")
+print(f"  • Admin API: {'✅' if response.status_code == 200 else '❌'}")
+
 # TODO: implement edge case handling

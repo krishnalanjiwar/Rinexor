@@ -62,4 +62,36 @@ class SmartAllocator:
         dca_tiers = self._get_dca_tiers(ranked_dcas)
         
         # Allocate cases to DCAs
+        allocation_map = {}
+        
+        # High risk → Top performing DCAs
+        allocation_map = self._allocate_to_tier(
+            high_risk_cases, 
+            dca_tiers['top'], 
+            allocation_map, 
+            'high',
+            db
+        )
+        
+        # Intermediate risk → Mid performing DCAs
+        allocation_map = self._allocate_to_tier(
+            intermediate_cases, 
+            dca_tiers['mid'], 
+            allocation_map, 
+            'intermediate',
+            db
+        )
+        
+        # Low risk → Lower performing DCAs
+        allocation_map = self._allocate_to_tier(
+            low_risk_cases, 
+            dca_tiers['lower'], 
+            allocation_map, 
+            'low',
+            db
+        )
+        
+        # Generate preview response
+        allocation_preview = self._generate_preview(allocation_map, ranked_dcas)
+        summary = self._generate_summary(classified_cases, allocation_preview)
 # TODO: implement edge case handling
