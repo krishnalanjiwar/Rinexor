@@ -838,4 +838,51 @@ async def get_dashboard_reports_data(
             ).scalar() or 0
 
         ageing_data.append({
-# TODO: implement edge case handling
+            "bucket": bucket["bucket"],
+            "cases": count,
+            "amount": round(float(amount or 0), 2),
+        })
+
+    # --- DCA Agent Comparison ---
+    dca_comparison = []
+    for dca in dcas:
+        total = db.query(func.count(Case.id)).filter(Case.dca_id == dca.id).scalar() or 0
+        resolved = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id, Case.status == CaseStatus.RESOLVED
+        ).scalar() or 0
+
+        recovery_pct = round((resolved / total * 100) if total > 0 else 0, 1)
+        sla_pct = round((dca.sla_compliance_rate or 0) * 100, 1)
+
+        dca_comparison.append({
+            "agent": dca.name.split()[0],  # Short name
+            "full_name": dca.name,
+            "recovery": recovery_pct,
+            "sla": sla_pct,
+        })
+
+    # --- Overall KPIs for reports page ---
+    total_original = db.query(func.sum(Case.original_amount)).scalar() or 0
+    total_current = db.query(func.sum(Case.current_amount)).scalar() or 0
+    overall_recovery = round(((total_original - total_current) / total_original * 100) if total_original > 0 else 0, 1)
+
+    total_with_sla = db.query(func.count(Case.id)).filter(
+        Case.sla_resolution_deadline.isnot(None)
+    ).scalar() or 0
+    sla_met = db.query(func.count(Case.id)).filter(
+        Case.resolved_date <= Case.sla_resolution_deadline
+    ).scalar() or 0
+    overall_sla = round((sla_met / total_with_sla * 100) if total_with_sla > 0 else 0, 1)
+
+    return {
+        "recovery_comparison": recovery_comparison,
+        "dca_keys": dca_keys,
+        "sla_trends": sla_trends,
+        "ageing_data": ageing_data,
+        "dca_comparison": dca_comparison,
+        "kpis": {
+            "recovery_rate": overall_recovery,
+            "sla_compliance": overall_sla,
+            "recovered_amount": round(total_original - total_current, 2),
+        }
+    }
