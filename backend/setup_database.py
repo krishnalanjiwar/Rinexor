@@ -277,4 +277,35 @@ except Exception as e:
     cursor = conn.cursor()
     
     # Basic tables
+    basic_tables = [
+        """CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            hashed_password TEXT NOT NULL,
+            full_name TEXT,
+            role TEXT NOT NULL CHECK(role IN ('enterprise_admin', 'collection_manager', 'dca_agent')),
+            dca_id TEXT,
+            is_active BOOLEAN DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )""",
+        
+        """CREATE TABLE IF NOT EXISTS dcas (
+            id TEXT PRIMARY KEY,
+            name TEXT UNIQUE NOT NULL,
+            code TEXT UNIQUE NOT NULL,
+            contact_person TEXT NOT NULL,
+            email TEXT NOT NULL,
+            phone TEXT,
+            performance_score REAL DEFAULT 0.0,
+            recovery_rate REAL DEFAULT 0.0,
+            is_active BOOLEAN DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )""",
+        
+        """CREATE TABLE IF NOT EXISTS cases (
+            id TEXT PRIMARY KEY,
+            account_id TEXT NOT NULL,
+            debtor_name TEXT NOT NULL,
+            original_amount REAL NOT NULL,
+            current_amount REAL NOT NULL,
 # TODO: implement edge case handling

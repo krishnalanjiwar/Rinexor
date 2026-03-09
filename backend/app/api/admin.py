@@ -118,4 +118,34 @@ async def get_system_stats(
     total_dcas = db.query(func.count(DCA.id)).scalar()
     active_dcas = db.query(func.count(DCA.id)).filter(DCA.is_active == True).scalar()
     
+    # Case stats
+    total_cases = db.query(func.count(Case.id)).scalar()
+    cases_today = db.query(func.count(Case.id)).filter(
+        func.date(Case.created_at) == func.date('now')
+    ).scalar()
+    
+    # Database size (SQLite specific)
+    import os
+    db_size = os.path.getsize("recoverai.db") if os.path.exists("recoverai.db") else 0
+    
+    return {
+        "users": {
+            "total": total_users,
+            "active": active_users,
+            "by_role": {
+                role.value: db.query(func.count(User.id)).filter(User.role == role).scalar()
+                for role in UserRole
+            }
+        },
+        "dcas": {
+            "total": total_dcas,
+            "active": active_dcas,
+            "accepting_cases": db.query(func.count(DCA.id)).filter(DCA.is_accepting_cases == True).scalar()
+        },
+        "cases": {
+            "total": total_cases,
+            "today": cases_today,
+            "by_status": {
+                status.value: db.query(func.count(Case.id)).filter(Case.status == status).scalar()
+                for status in CaseStatus
 # TODO: implement edge case handling

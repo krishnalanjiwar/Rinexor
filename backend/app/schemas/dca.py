@@ -91,4 +91,35 @@ class DCAPerformanceMetrics(BaseSchema):
     
     # Breakdown by case priority
     high_priority_recovery_rate: Optional[float] = None
+    medium_priority_recovery_rate: Optional[float] = None
+    low_priority_recovery_rate: Optional[float] = None
+
+
+class DCAPerformanceResponse(BaseSchema):
+    """Schema for DCA performance API response"""
+    dca_id: str
+    dca_name: str
+    dca_code: str
+    period_start: datetime
+    period_end: datetime
+    metrics: DCAPerformanceMetrics
+    last_updated: datetime
+
+
+class DCACapacityInfo(BaseSchema):
+    """Schema for DCA capacity information"""
+    dca_id: str
+    dca_name: str
+    dca_code: str
+    max_concurrent_cases: int
+    current_active_cases: int
+    available_slots: int
+    utilization_percentage: float
+    is_accepting_cases: bool
+    capacity_status: str  # "available", "limited", "full", "overloaded"
+    
+    @validator('capacity_status', pre=True, always=True)
+    def determine_capacity_status(cls, v, values):
+        if 'utilization_percentage' in values:
+            util = values['utilization_percentage']
 # TODO: implement edge case handling

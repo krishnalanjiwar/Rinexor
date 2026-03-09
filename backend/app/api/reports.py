@@ -268,4 +268,34 @@ async def get_sla_compliance_report(
     contact_sla_met = query.filter(
         Case.first_contact_date <= Case.sla_contact_deadline
     ).count()
+    contact_sla_breached = query.filter(
+        and_(
+            Case.sla_contact_deadline < now,
+            Case.first_contact_date.is_(None)
+        )
+    ).count()
+    
+    # Resolution SLA compliance
+    resolution_sla_total = query.filter(Case.sla_resolution_deadline.isnot(None)).count()
+    resolution_sla_met = query.filter(
+        Case.resolved_date <= Case.sla_resolution_deadline
+    ).count()
+    resolution_sla_breached = query.filter(
+        and_(
+            Case.sla_resolution_deadline < now,
+            Case.resolved_date.is_(None)
+        )
+    ).count()
+    
+    # Calculate compliance rates
+    contact_compliance_rate = (contact_sla_met / contact_sla_total * 100) if contact_sla_total > 0 else 0
+    resolution_compliance_rate = (resolution_sla_met / resolution_sla_total * 100) if resolution_sla_total > 0 else 0
+    
+    # SLA breaches by priority
+    priority_breaches = db.query(
+        Case.priority,
+        func.count(Case.id).label('breach_count')
+    ).filter(
+        Case.created_at >= period_start,
+        or_(
 # TODO: implement edge case handling
