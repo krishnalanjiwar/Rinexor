@@ -1,0 +1,17 @@
+# Rinexor Backend Dependencies
+fastapi
+uvicorn[standard]
+python-jose[cryptography]
+passlib[bcrypt]
+sqlalchemy
+python-multipart
+pydantic
+
+# ML Dependencies
+numpy
+pandas
+scikit-learn
+
+# Qdrant Cloud
+qdrant-client
+python-dotenv
