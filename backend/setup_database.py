@@ -60,4 +60,35 @@ try:
         dca = DCA(
             id=str(uuid.uuid4()),
             name=name,
+            code=f"DCA-{i+1:03d}",
+            contact_person=contact,
+            email=email,
+            phone=f"+1-555-{1000+i}",
+            address=f"{i+100} Collection St, New York, NY",
+            performance_score=round(random.uniform(0.7, 0.95), 2),
+            recovery_rate=round(random.uniform(65, 92), 1),
+            avg_resolution_days=round(random.uniform(20, 40), 1),
+            max_concurrent_cases=random.choice([30, 50, 75]),
+            current_active_cases=random.randint(5, 20),
+            specialization=random.sample(["medical", "credit_card", "personal_loan", "mortgage"], 2),
+            sla_compliance_rate=round(random.uniform(88, 98), 1),
+            is_active=True,
+            is_accepting_cases=True
+        )
+        dcas.append(dca)
+        db.add(dca)
+    
+    db.commit()
+    print(f"✅ Created {len(dcas)} DCAs")
+    
+    # 2. Create Users
+    users = []
+    
+    # Enterprise Admin
+    admin = User(
+        id=str(uuid.uuid4()),
+        email="admin@rinexor.com",
+        hashed_password="$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",  # "secret"
+        full_name="System Administrator",
+        role=UserRole.ENTERPRISE_ADMIN,
 # TODO: implement edge case handling

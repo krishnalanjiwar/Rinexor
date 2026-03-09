@@ -148,4 +148,34 @@ DCA User: dca@demo.com / dca123
 - `dca.active_cases + dca.resolved_cases` → Total cases
 - `dca.average_resolution_days` → Resolution time
 
+---
+
+## 7. Role-Based Access Control
+
+The frontend now respects backend authentication and role-based permissions:
+
+**Super Admin:**
+- Can view all cases across enterprises
+- Can view all DCAs and their performance
+- Can view all enterprises
+
+**Enterprise Admin:**
+- Can view cases only for their enterprise
+- Can view DCA agencies assigned to them
+- Can manage team members (employees)
+
+**DCA User:**
+- Can view only their assigned cases
+- Can update case status and add remarks
+- Can upload proof of resolution
+
+---
+
+## 8. Error Handling & Loading States
+
+All dashboard pages now feature:
+- Centralized error messages from API
+- Retry buttons for failed requests
+- Loading spinners during data fetch
+- Graceful fallbacks for missing data
 
