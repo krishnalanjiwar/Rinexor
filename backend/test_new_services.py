@@ -30,4 +30,36 @@ def test_workflow_service():
             pass
         def add(self, obj):
             pass
+    
+    class MockQuery:
+        def filter(self, *args):
+            return self
+        def all(self):
+            return []
+        def first(self):
+            return None
+    
+    db = MockDB()
+    
+    try:
+        result = WorkflowService.process_new_case(case_data, db)
+        print(f"✅ WorkflowService.process_new_case: {result}")
+        
+        # Test SLA breach checking
+        breaches = WorkflowService.check_sla_breaches(db)
+        print(f"✅ WorkflowService.check_sla_breaches: {len(breaches)} breaches found")
+        
+    except Exception as e:
+        print(f"❌ WorkflowService error: {e}")
+
+def test_allocation_service():
+    """Test AllocationService"""
+    print("\n🎯 Testing AllocationService...")
+    
+    try:
+        # Test DCA scoring
+        case_data = {
+            "original_amount": 15000,
+            "days_delinquent": 30,
+            "debt_type": "personal_loan"
 # TODO: implement edge case handling

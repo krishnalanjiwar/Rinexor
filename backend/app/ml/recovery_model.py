@@ -91,4 +91,35 @@ class RecoveryModel:
                 if col not in features_df.columns:
                     features_df[col] = 0
             
+            # Reorder columns
+            features_df = features_df[self.feature_columns]
+            
+            # Scale and predict
+            features_scaled = self.scaler.transform(features_df)
+            recovery_prob = float(self.model.predict(features_scaled)[0])
+            
+            # Ensure probability is between 0-1
+            recovery_prob = max(0, min(1, recovery_prob))
+            
+            # Get confidence and explanation
+            confidence = self._calculate_confidence(recovery_prob)
+            explanation = self._generate_explanation(features, recovery_prob)
+            
+            return {
+                'recovery_probability': recovery_prob,
+                'recovery_score': round(recovery_prob * 100, 1),
+                'confidence': confidence,
+                'key_factors': explanation['key_factors'],
+                'risk_factors': explanation['risk_factors'],
+                'recommended_action': explanation['recommended_action']
+            }
+            
+        except Exception as e:
+            # Fallback to rule-based
+            return self._predict_with_rule_based(case_data)
+    
+    def _predict_with_rule_based(self, case_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Fallback rule-based prediction"""
+        recovery_score = self._calculate_rule_based_score(case_data)
+        recovery_prob = recovery_score / 100
 # TODO: implement edge case handling

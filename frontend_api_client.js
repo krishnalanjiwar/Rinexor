@@ -148,4 +148,34 @@ class RinexorAPI {
     });
   }
 
+  async analyzePortfolio(caseIds) {
+    return this.apiCall('/ai/analyze-portfolio', {
+      method: 'POST',
+      body: JSON.stringify({ case_ids: caseIds })
+    });
+  }
+
+  async getPatterns() {
+    return this.apiCall('/ai/patterns');
+  }
+
+  async getModelStatus() {
+    return this.apiCall('/ai/model-status');
+  }
+
+  // Reports
+  async getDashboardOverview() {
+    return this.apiCall('/reports/dashboard/overview');
+  }
+
+  async getDCAPerformanceReport(periodDays = 30, dcaId = null) {
+    const params = new URLSearchParams({ period_days: periodDays });
+    if (dcaId) params.append('dca_id', dcaId);
+    return this.apiCall(`/reports/performance/dcas?${params}`);
+  }
+
+  async getRecoveryTrends(periodDays = 90, granularity = 'daily') {
+    const params = new URLSearchParams({ period_days: periodDays, granularity });
+    return this.apiCall(`/reports/recovery/trends?${params}`);
+  }
 // TODO: refactor logic here

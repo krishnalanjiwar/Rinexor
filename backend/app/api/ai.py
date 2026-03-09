@@ -91,4 +91,35 @@ async def detect_patterns(
         query = db.query(Case)
         
         if current_user["role"] == "collection_manager" and current_user.get("dca_id"):
+            query = query.filter(Case.dca_id == current_user.get("dca_id"))
+        
+        cases = query.all()
+        case_dicts = [case.__dict__ for case in cases]
+        
+        # Remove SQLAlchemy instance state
+        for case in case_dicts:
+            if '_sa_instance_state' in case:
+                del case['_sa_instance_state']
+        
+        from app.ml.pattern_detector import PatternDetector
+        patterns = PatternDetector.detect_recovery_patterns(case_dicts)
+        
+        return patterns
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Pattern detection failed: {str(e)}")
+
+@router.post("/train-model")
+async def train_ai_model(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_role(["enterprise_admin"]))
+):
+    """Train the AI model with current data"""
+    try:
+        # Get historical data for training
+        cases = db.query(Case).filter(Case.status == "resolved").all()
+        
+        if len(cases) < 10:
+            return {
+                "success": False,
+                "message": f"Need at least 10 resolved cases for training. Found {len(cases)}.",
 # TODO: implement edge case handling
