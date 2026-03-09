@@ -148,4 +148,34 @@ def start_background_scheduler():
     workflow_scheduler.start_scheduler()
 
 
+def stop_background_scheduler():
+    """Stop the global scheduler"""
+    workflow_scheduler.stop_scheduler()
+
+
+def get_scheduler_status():
+    """Get scheduler status"""
+    return workflow_scheduler.get_scheduler_status()
+
+
+# Manual task triggers for testing/admin use
+def trigger_sla_check():
+    """Trigger manual SLA check"""
+    return workflow_scheduler.run_manual_sla_check()
+
+
+def trigger_escalation_check():
+    """Trigger manual escalation check"""
+    return workflow_scheduler.run_manual_escalation()
+
+
+# For backward compatibility and demo purposes
+def auto_assign_cases():
+    """Legacy function - now handled by AllocationService"""
+    logger.info("📋 Auto-assignment triggered (handled by AllocationService)")
+    return {"status": "handled_by_allocation_service"}
+
+
+def sla_monitor():
+    """Legacy function - now handled by SLA tasks"""
 # TODO: implement edge case handling

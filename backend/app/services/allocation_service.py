@@ -94,4 +94,36 @@ class AllocationService:
     def _calculate_specialization_score(case_data: Dict[str, Any], dca: DCA) -> float:
         """Calculate specialization match score"""
         debt_type = case_data.get('debt_type', 'other')
+        amount = case_data.get('original_amount', 0)
+        
+        # Get DCA specializations (mock for now)
+        specializations = getattr(dca, 'specialization', [])
+        
+        if not specializations:
+            return 0.5  # Neutral if no specialization data
+        
+        # Check for debt type match
+        if debt_type in specializations:
+            score = 1.0
+        else:
+            score = 0.3  # Can handle but not specialized
+        
+        # Adjust for amount ranges (some DCAs better with high-value cases)
+        if amount >= 50000 and 'high_value' in specializations:
+            score += 0.2
+        elif amount <= 5000 and 'small_claims' in specializations:
+            score += 0.2
+        
+        return min(1.0, score)
+    
+    @staticmethod
+    def _calculate_workload_score(dca: DCA, db: Session) -> float:
+        """Calculate workload balance score"""
+        # Get average case age for this DCA
+        avg_case_age = db.query(func.avg(
+            func.julianday('now') - func.julianday(Case.created_at)
+        )).filter(
+            Case.dca_id == dca.id,
+            Case.status.in_([CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS])
+        ).scalar() or 0
 # TODO: implement edge case handling

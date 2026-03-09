@@ -238,4 +238,34 @@ POST   /api/cases/upload-csv              → CSV upload
 8. User can interact with real case data
 ```
 
+---
+
+## 13. No UI Changes
+
+✅ All visual changes are **zero** - the UI remains identical
+✅ Only the data source changed (mock data → API calls)
+✅ Same component structure, styling, and layout
+✅ Same functionality, now backed by real backend
+
+---
+
+## 14. Environment Configuration
+
+The API base URL can be configured via:
+- Environment variable: `VITE_API_URL`
+- Default: `http://localhost:8000/api`
+
+**For production:**
+```typescript
+// Create .env file or set environment variable
+VITE_API_URL=https://api.rinexor.com/api
+```
+
+---
+
+## 15. Testing the Integration
+
+### Prerequisites
+1. Backend running on `http://localhost:8000`
+2. CORS enabled (already configured in backend)
 

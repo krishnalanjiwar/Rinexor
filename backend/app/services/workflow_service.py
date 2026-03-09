@@ -126,4 +126,36 @@ class WorkflowService:
             score += 25
         elif days_delinquent <= 90:
             score += 10
+        elif days_delinquent >= 365:
+            score -= 30
+        
+        # Ensure score is between 0-100
+        return max(0.0, min(100.0, score))
+    
+    @staticmethod
+    def update_case_status(case_id: str, new_status: str, db: Session, user_id: str = None) -> bool:
+        """Update case status with workflow validation"""
+        case = db.query(Case).filter(Case.id == case_id).first()
+        if not case:
+            return False
+        
+        # Validate status transition
+        if not WorkflowService._is_valid_status_transition(case.status, new_status):
+            return False
+        
+        # Update case
+        case.status = new_status
+        case.updated_at = datetime.utcnow()
+        
+        # Log status change
+        WorkflowService._log_status_change(case, new_status, user_id, db)
+        
+        db.commit()
+        return True
+    
+    @staticmethod
+    def _is_valid_status_transition(current_status: str, new_status: str) -> bool:
+        """Validate if status transition is allowed"""
+        valid_transitions = {
+            CaseStatus.NEW: [CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS, CaseStatus.CLOSED],
 # TODO: implement edge case handling
