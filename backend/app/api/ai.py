@@ -29,4 +29,35 @@ async def get_optional_user(token: Optional[str] = Depends(oauth2_scheme_optiona
 
 # Initialize AI service
 ai_service = AIService()
+ai_service.initialize()
+
+
+@router.post("/analyze-case")
+async def analyze_case(
+    case_data: Dict[str, Any],
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Analyze a single case with AI"""
+    try:
+        result = ai_service.analyze_case(case_data)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI analysis failed: {str(e)}")
+
+@router.post("/analyze-portfolio")
+async def analyze_portfolio(
+    case_ids: List[str] = None,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Analyze portfolio of cases with AI"""
+    try:
+        if case_ids:
+            # Get specific cases
+            cases = db.query(Case).filter(Case.id.in_(case_ids)).all()
+            case_dicts = [case.__dict__ for case in cases]
+        else:
+            # Get all cases user has access to
+            query = db.query(Case)
 # TODO: implement edge case handling
