@@ -88,4 +88,34 @@ class WorkflowScheduler:
             # 
             # self.scheduler.start()
             # self.is_running = True
+            
+            logger.info("✅ Workflow Scheduler ready (demo mode)")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to start scheduler: {e}")
+    
+    def stop_scheduler(self):
+        """Stop the background scheduler"""
+        if self.scheduler and self.is_running:
+            self.scheduler.shutdown()
+            self.is_running = False
+            logger.info("🛑 Workflow Scheduler stopped")
+    
+    def run_manual_sla_check(self):
+        """Manually trigger SLA breach check"""
+        try:
+            from app.task.sla_tasks import hourly_sla_check
+            result = hourly_sla_check()
+            logger.info(f"📋 Manual SLA check completed: {result}")
+            return result
+        except Exception as e:
+            logger.error(f"❌ Manual SLA check failed: {e}")
+            return {"status": "error", "message": str(e)}
+    
+    def run_manual_escalation(self):
+        """Manually trigger case escalation"""
+        try:
+            from app.task.sla_tasks import daily_escalation_check
+            result = daily_escalation_check()
+            logger.info(f"🚨 Manual escalation check completed: {result}")
 # TODO: implement edge case handling

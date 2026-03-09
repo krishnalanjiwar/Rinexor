@@ -148,4 +148,34 @@ class RiskClassifier:
         
         # 4. Debt Age Severity (15% weight)
         debt_age_days = case_data.get('debt_age_days', days_delinquent)
+        age_severity = min(debt_age_days / 365, 1.0) * 100  # Cap at 1 year
+        risk_score += age_severity * 0.15
+        
+        # 5. Amount to Income Ratio (10% weight)
+        debt_to_income = case_data.get('debt_to_income', 0.3)
+        dti_risk = min(debt_to_income * 100, 100)  # Cap at 100%
+        risk_score += dti_risk * 0.10
+        
+        return min(100, max(0, risk_score))
+    
+    def _get_risk_level(self, recovery_prob: float) -> str:
+        """Determine risk level from recovery probability"""
+        if recovery_prob <= 0.39:
+            return RiskLevel.HIGH
+        elif recovery_prob <= 0.69:
+            return RiskLevel.INTERMEDIATE
+        else:
+            return RiskLevel.LOW
+    
+    def _calculate_confidence(self, risk_score: float) -> str:
+        """Calculate classification confidence"""
+        # Higher confidence when score is clearly in a band
+        if risk_score < 25 or risk_score > 75:
+            return 'high'
+        elif risk_score < 35 or risk_score > 65:
+            return 'medium'
+        else:
+            return 'low'  # Near threshold boundaries
+    
+    def _generate_explanation(self, case_data: Dict[str, Any], 
 # TODO: implement edge case handling
