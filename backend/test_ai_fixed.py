@@ -34,4 +34,40 @@ test_cases = [
         "debt_type": "medical",
         "credit_score": 580,
         "employment_months": 6
+    },
+    {
+        "account_id": "ACC-1003",
+        "debtor_name": "Robert Johnson",
+        "original_amount": 42000.00,
+        "days_delinquent": 30,
+        "debt_type": "mortgage",
+        "credit_score": 800,
+        "employment_months": 120
+    }
+]
+
+print("\n1. Testing Single Case Analysis...")
+print("-" * 40)
+
+for i, case in enumerate(test_cases[:1]):
+    print(f"\n📊 Analyzing Case {i+1}: {case['account_id']}")
+    result = ai_service.analyze_case(case)
+    
+    print(f"   Recovery Score: {result['recovery_score']}/100")
+    print(f"   Priority Level: {result['priority_level']}")
+    print(f"   Expected Recovery: ${result['expected_recovery_value']:,.2f}")
+    print(f"   AI Confidence: {result['ai_insights']['ai_confidence']}")
+    
+    print(f"\n   🔑 Key Factors: {', '.join(result['ai_insights']['key_factors'])}")
+    print(f"   ⚠️  Risk Factors: {', '.join(result['ai_insights']['risk_factors'])}")
+    print(f"   🎯 Recommended: {result['ai_insights']['recommended_strategy']}")
+
+print("\n2. Testing Portfolio Analysis...")
+print("-" * 40)
+
+portfolio_result = ai_service.analyze_portfolio(test_cases)
+print(f"   Total Cases Analyzed: {portfolio_result['total_cases_analyzed']}")
+
+# Safely access batch analysis
+batch_analysis = portfolio_result.get('batch_analysis', {})
 # TODO: implement edge case handling

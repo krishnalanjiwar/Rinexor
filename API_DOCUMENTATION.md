@@ -35,4 +35,41 @@
 
 ### DCA Management
 - GET /api/v1/dcas - List all DCAs
+- POST /api/v1/dcas - Create new DCA
+- GET /api/v1/dcas/{dca_id} - Get specific DCA
+- PUT /api/v1/dcas/{dca_id} - Update DCA
+- GET /api/v1/dcas/{dca_id}/performance - DCA performance metrics
+- GET /api/v1/dcas/{dca_id}/cases - Cases assigned to DCA
+- POST /api/v1/dcas/{dca_id}/recalculate-performance - Recalculate performance
+
+### AI & Analytics
+- POST /api/v1/ai/analyze-case - Single case AI analysis
+- POST /api/v1/ai/analyze-portfolio - Portfolio-level analysis
+- GET /api/v1/ai/patterns - Pattern detection
+- POST /api/v1/ai/train-model - Train AI model
+- GET /api/v1/ai/model-status - Model status
+- POST /api/v1/ai/prioritize-cases - Batch case prioritization
+
+### 📊 NEW: Reports & Analytics
+- GET /api/v1/reports/dashboard/overview - High-level dashboard stats
+- GET /api/v1/reports/performance/dcas - DCA performance report
+- GET /api/v1/reports/recovery/trends - Recovery trends over time
+- GET /api/v1/reports/sla/compliance - SLA compliance report
+- GET /api/v1/reports/portfolio/analysis - Portfolio analysis
+- GET /api/v1/reports/export/cases - Export cases (JSON/CSV)
+
+### Admin Functions
+- GET /api/v1/admin/users - List all users
+- POST /api/v1/admin/users - Create user
+- PUT /api/v1/admin/users/{user_id}/deactivate - Deactivate user
+- POST /api/v1/admin/sla/check-violations - Check SLA breaches
+- GET /api/v1/admin/system-stats - System statistics
+- POST /api/v1/admin/recalculate-metrics - Recalculate metrics
+- **POST /api/v1/admin/upload-cases** - 📁 **Bulk upload cases from CSV**
+- **GET /api/v1/admin/upload-template** - 📋 **Get CSV template and instructions**
+
+## 🔧 Backend Services Now Include:
+
+### WorkflowService
+- Automated case processing and state management
 
