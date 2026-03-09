@@ -298,4 +298,34 @@ async def upload_cases_csv(
                 )
                 
                 db.add(case)
+                
+                # Schedule AI analysis in background
+                background_tasks.add_task(
+                    perform_bulk_ai_analysis,
+                    case.id,
+                    case_data,
+                    db
+                )
+                
+                results["successful"].append({
+                    "row": index + 1,
+                    "case_id": case.id,
+                    "account_id": case.account_id,
+                    "priority": case.priority,
+                    "recovery_score": case.recovery_score,
+                    "allocated_dca": processed_data["dca_id"]
+                })
+                
+            except Exception as e:
+                results["failed"].append({
+                    "row": index + 1,
+                    "error": str(e),
+                    "data": row.to_dict()
+                })
+        
+        # Commit all successful cases
+        db.commit()
+        
+        # Generate summary
+        results["summary"] = {
 # TODO: implement edge case handling

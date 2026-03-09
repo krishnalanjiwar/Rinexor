@@ -318,4 +318,36 @@ class SmartAllocator:
             
             preview_item = {
                 'dca_id': dca_id,
+                'dca_name': dca_info['dca_name'],
+                'dca_code': dca_info.get('dca_code', ''),
+                'performance_score': dca_info['performance_score'],
+                'recovery_rate': dca_info['recovery_rate'],
+                'assigned_cases': len(cases),
+                'amount_to_recover': round(total_amount, 2),
+                'risk_breakdown': {
+                    level: len(risk_cases) 
+                    for level, risk_cases in risk_levels.items()
+                },
+                'assigned_case_ids': [
+                    c.get('account_id', c.get('id', '')) for c in cases
+                ]
+            }
+            
+            preview.append(preview_item)
+        
+        # Sort by performance score (highest first)
+        preview.sort(key=lambda x: x['performance_score'], reverse=True)
+        
+        return preview
+    
+    def _generate_summary(
+        self, 
+        classified_cases: List[Dict[str, Any]],
+        allocation_preview: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """Generate summary statistics"""
+        total_cases = len(classified_cases)
+        total_amount = sum(c.get('original_amount', 0) for c in classified_cases)
+        
+        # Count by risk level
 # TODO: implement edge case handling
