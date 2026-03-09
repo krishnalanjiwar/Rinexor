@@ -1,0 +1,51 @@
+account_id,debtor_name,debtor_email,debtor_phone,debtor_address,original_amount,current_amount,days_delinquent,debt_age_days,credit_score,debt_to_income
+ACC_00001,Rajesh Kumar,rajesh.kumar@email.com,+91-9876543210,"12 Gandhi Nagar, Mumbai, MH 400001",75000,68000,45,90,620,0.35
+ACC_00002,Priya Sharma,priya.sharma@email.com,+91-9876543211,"45 MG Road, Bangalore, KA 560001",150000,150000,120,180,540,0.55
+ACC_00003,Amit Patel,amit.patel@email.com,+91-9876543212,"78 Park Street, Kolkata, WB 700016",25000,20000,30,60,710,0.20
+ACC_00004,Sunita Reddy,sunita.reddy@email.com,+91-9876543213,"23 Anna Salai, Chennai, TN 600002",45000,42000,60,90,650,0.30
+ACC_00005,Vikram Singh,vikram.singh@email.com,+91-9876543214,"56 Sector 15, Noida, UP 201301",200000,195000,180,240,480,0.70
+ACC_00006,Anjali Gupta,anjali.gupta@email.com,+91-9876543215,"89 Banjara Hills, Hyderabad, TS 500034",35000,30000,15,45,750,0.15
+ACC_00007,Deepak Joshi,deepak.joshi@email.com,+91-9876543216,"34 Civil Lines, Jaipur, RJ 302006",80000,75000,90,150,580,0.45
+ACC_00008,Meera Nair,meera.nair@email.com,+91-9876543217,"67 Marine Drive, Kochi, KL 682001",120000,110000,75,120,630,0.40
+ACC_00009,Suresh Iyer,suresh.iyer@email.com,+91-9876543218,"12 Aundh Road, Pune, MH 411007",55000,55000,200,250,510,0.60
+ACC_00010,Kavita Menon,kavita.menon@email.com,+91-9876543219,"45 Jubilee Hills, Hyderabad, TS 500033",18000,15000,20,40,780,0.12
+ACC_00011,Rahul Verma,rahul.verma@email.com,+91-9876543220,"78 Dwarka, New Delhi, DL 110075",95000,90000,100,160,560,0.50
+ACC_00012,Sneha Pillai,sneha.pillai@email.com,+91-9876543221,"23 Koramangala, Bangalore, KA 560034",42000,38000,55,85,670,0.28
+ACC_00013,Arun Krishnan,arun.krishnan@email.com,+91-9876543222,"56 T Nagar, Chennai, TN 600017",180000,175000,150,200,520,0.65
+ACC_00014,Pooja Bhatt,pooja.bhatt@email.com,+91-9876543223,"89 Worli, Mumbai, MH 400018",28000,22000,25,50,720,0.18
+ACC_00015,Sanjay Deshmukh,sanjay.deshmukh@email.com,+91-9876543224,"34 Shivaji Nagar, Nagpur, MH 440010",65000,60000,110,170,545,0.48
+ACC_00016,Lakshmi Rao,lakshmi.rao@email.com,+91-9876543225,"67 Whitefield, Bangalore, KA 560066",32000,28000,40,70,690,0.25
+ACC_00017,Nitin Shah,nitin.shah@email.com,+91-9876543226,"12 CG Road, Ahmedabad, GJ 380009",110000,105000,85,130,600,0.42
+ACC_00018,Divya Kapoor,divya.kapoor@email.com,+91-9876543227,"45 Vasant Vihar, New Delhi, DL 110057",22000,18000,35,65,740,0.16
+ACC_00019,Karthik Rajan,karthik.rajan@email.com,+91-9876543228,"78 Adyar, Chennai, TN 600020",160000,155000,160,220,495,0.68
+ACC_00020,Ritu Saxena,ritu.saxena@email.com,+91-9876543229,"23 Gomti Nagar, Lucknow, UP 226010",48000,45000,70,100,660,0.32
+ACC_00021,Vijay Malhotra,vijay.malhotra@email.com,+91-9876543230,"56 Model Town, Ludhiana, PB 141002",85000,80000,95,145,570,0.44
+ACC_00022,Anitha Menon,anitha.menon@email.com,+91-9876543231,"89 Vyttila, Kochi, KL 682019",38000,32000,50,80,700,0.22
+ACC_00023,Manoj Tiwari,manoj.tiwari@email.com,+91-9876543232,"34 Rajendra Nagar, Patna, BR 800016",130000,125000,130,190,530,0.58
+ACC_00024,Shweta Agarwal,shweta.agarwal@email.com,+91-9876543233,"67 Salt Lake, Kolkata, WB 700091",20000,16000,18,35,770,0.10
+ACC_00025,Prasad Kulkarni,prasad.kulkarni@email.com,+91-9876543234,"12 FC Road, Pune, MH 411004",70000,65000,80,125,615,0.38
+ACC_00026,Geeta Chopra,geeta.chopra@email.com,+91-9876543235,"45 Sector 17, Chandigarh, CH 160017",52000,48000,65,95,645,0.34
+ACC_00027,Ashok Pandey,ashok.pandey@email.com,+91-9876543236,"78 Hazratganj, Lucknow, UP 226001",190000,185000,170,230,505,0.72
+ACC_00028,Nisha Joseph,nisha.joseph@email.com,+91-9876543237,"23 MG Road, Trivandrum, KL 695001",15000,12000,12,30,790,0.08
+ACC_00029,Ramesh Shetty,ramesh.shetty@email.com,+91-9876543238,"56 JP Nagar, Bangalore, KA 560078",100000,95000,105,165,555,0.52
+ACC_00030,Pallavi Deshpande,pallavi.deshpande@email.com,+91-9876543239,"89 Prabhat Road, Pune, MH 411004",60000,55000,75,110,635,0.36
+ACC_00031,Harish Mehta,harish.mehta@email.com,+91-9876543240,"34 Satellite, Ahmedabad, GJ 380015",140000,135000,140,200,525,0.62
+ACC_00032,Uma Shankar,uma.shankar@email.com,+91-9876543241,"67 Mylapore, Chennai, TN 600004",30000,25000,28,55,730,0.19
+ACC_00033,Kamal Bose,kamal.bose@email.com,+91-9876543242,"12 Behala, Kolkata, WB 700034",88000,82000,88,140,590,0.46
+ACC_00034,Rekha Patil,rekha.patil@email.com,+91-9876543243,"45 Kothrud, Pune, MH 411038",40000,35000,48,78,680,0.26
+ACC_00035,Satish Choudhary,satish.choudhary@email.com,+91-9876543244,"78 Malviya Nagar, Jaipur, RJ 302017",170000,165000,155,215,515,0.66
+ACC_00036,Jaya Krishnamurthy,jaya.k@email.com,+91-9876543245,"23 Indiranagar, Bangalore, KA 560038",26000,22000,22,42,760,0.14
+ACC_00037,Mohan Das,mohan.das@email.com,+91-9876543246,"56 Panjim, Goa, GA 403001",78000,72000,82,128,605,0.40
+ACC_00038,Seema Oberoi,seema.oberoi@email.com,+91-9876543247,"89 Punjabi Bagh, New Delhi, DL 110026",58000,53000,58,88,655,0.33
+ACC_00039,Dinesh Rawat,dinesh.rawat@email.com,+91-9876543248,"34 Rajpur Road, Dehradun, UK 248001",125000,120000,125,185,535,0.56
+ACC_00040,Padma Venkatesh,padma.v@email.com,+91-9876543249,"67 Jayanagar, Bangalore, KA 560041",33000,28000,38,68,705,0.21
+ACC_00041,Bharat Mishra,bharat.mishra@email.com,+91-9876543250,"12 Gomti Nagar, Lucknow, UP 226010",92000,87000,98,155,565,0.49
+ACC_00042,Nalini Venkat,nalini.venkat@email.com,+91-9876543251,"45 RA Puram, Chennai, TN 600028",46000,42000,52,82,675,0.29
+ACC_00043,Prakash Hegde,prakash.hegde@email.com,+91-9876543252,"78 Mangalore, KA 575001",155000,150000,145,205,525,0.64
+ACC_00044,Gayatri Sen,gayatri.sen@email.com,+91-9876543253,"23 Alipore, Kolkata, WB 700027",24000,20000,24,48,745,0.17
+ACC_00045,Sunil Thakur,sunil.thakur@email.com,+91-9876543254,"56 Andheri, Mumbai, MH 400058",105000,100000,108,168,550,0.54
+ACC_00046,Vidya Raman,vidya.raman@email.com,+91-9876543255,"89 HSR Layout, Bangalore, KA 560102",36000,31000,42,72,695,0.24
+ACC_00047,Naresh Goel,naresh.goel@email.com,+91-9876543256,"34 Vaishali, Ghaziabad, UP 201010",185000,180000,165,225,500,0.70
+ACC_00048,Leela Menon,leela.menon@email.com,+91-9876543257,"67 Panampilly Nagar, Kochi, KL 682036",17000,14000,14,32,785,0.09
+ACC_00049,Girish Yadav,girish.yadav@email.com,+91-9876543258,"12 Varanasi, UP 221001",72000,67000,78,118,625,0.37
+ACC_00050,Savitha Kamath,savitha.k@email.com,+91-9876543259,"45 Manipal, KA 576104",50000,45000,62,92,665,0.31
