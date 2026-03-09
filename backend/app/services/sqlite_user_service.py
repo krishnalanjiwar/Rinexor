@@ -208,4 +208,34 @@ def authenticate_user(email: str, password: str) -> Optional[Dict[str, Any]]:
         return None
     # Remove hashed_password from returned data
     user_data.pop("hashed_password", None)
+    return user_data
+
+
+# ─── HELPERS ───────────────────────────────────────────────────────────────
+
+def _generate_password(length: int = 10) -> str:
+    """Generate a strong random password"""
+    chars = string.ascii_letters + string.digits + "!@#$"
+    # Ensure at least one of each type
+    password = [
+        random.choice(string.ascii_uppercase),
+        random.choice(string.ascii_lowercase),
+        random.choice(string.digits),
+        random.choice("!@#$"),
+    ]
+    password += [random.choice(chars) for _ in range(length - 4)]
+    random.shuffle(password)
+    return "".join(password)
+
+
+def _generate_email(role: str) -> str:
+    """Generate a unique email for a role"""
+    suffix = str(random.randint(1000, 9999))
+    if role == "enterprise_admin":
+        return f"admin{suffix}@rinexor.ai"
+    elif role == "dca_agent":
+        return f"agent{suffix}@rinexor.ai"
+    else:
+        return f"user{suffix}@rinexor.ai"
+
 # TODO: implement edge case handling

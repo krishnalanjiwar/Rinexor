@@ -94,4 +94,36 @@ class SmartAllocator:
         # Generate preview response
         allocation_preview = self._generate_preview(allocation_map, ranked_dcas)
         summary = self._generate_summary(classified_cases, allocation_preview)
+        
+        return {
+            'success': True,
+            'allocation_preview': allocation_preview,
+            'summary': summary,
+            'total_cases': len(classified_cases),
+            'preview_timestamp': datetime.now().isoformat()
+        }
+    
+    def confirm_allocation(
+        self,
+        allocation_preview: List[Dict[str, Any]],
+        cases: List[Dict[str, Any]],
+        db: Session,
+        user_id: str
+    ) -> Dict[str, Any]:
+        """
+        Confirm and execute the allocation after user consent.
+        
+        Args:
+            allocation_preview: The approved allocation preview
+            cases: Original case data with IDs
+            db: Database session
+            user_id: User performing the allocation
+            
+        Returns:
+            Allocation result with success/failure counts
+        """
+        from app.models.case import Case, CaseStatus
+        
+        allocated = []
+        failed = []
 # TODO: implement edge case handling

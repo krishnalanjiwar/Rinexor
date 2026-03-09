@@ -62,4 +62,36 @@ def test_allocation_service():
             "original_amount": 15000,
             "days_delinquent": 30,
             "debt_type": "personal_loan"
+        }
+        
+        # Mock DCA
+        class MockDCA:
+            def __init__(self):
+                self.id = "dca-123"
+                self.name = "Test DCA"
+                self.performance_score = 0.85
+                self.max_concurrent_cases = 50
+        
+        dca = MockDCA()
+        
+        # Mock database
+        class MockDB:
+            def query(self, model):
+                return MockQuery()
+        
+        class MockQuery:
+            def filter(self, *args):
+                return self
+            def scalar(self):
+                return 10  # Current cases
+        
+        db = MockDB()
+        
+        score = AllocationService._calculate_dca_score(case_data, dca, db)
+        print(f"✅ AllocationService DCA scoring: {score}")
+        
+        # Test capacity calculation
+        capacity_score = AllocationService._calculate_capacity_score(dca, db)
+        print(f"✅ AllocationService capacity scoring: {capacity_score}")
+        
 # TODO: implement edge case handling

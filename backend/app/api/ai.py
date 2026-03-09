@@ -215,4 +215,35 @@ async def upload_cases_file(
         if not result['success']:
             raise HTTPException(status_code=400, detail=result.get('error', 'File parsing failed'))
         
+        return {
+            "success": True,
+            "message": f"Successfully parsed {result['total_cases']} cases",
+            "total_cases": result['total_cases'],
+            "columns_found": result['columns_found'],
+            "sample_cases": result['cases'][:5]  # Return first 5 cases as sample
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"File upload failed: {str(e)}")
+
+
+@router.post("/analyze-file")
+async def analyze_uploaded_file(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_optional_user)
+):
+    """
+    Analyze uploaded file and classify cases into risk levels.
+    Returns risk distribution and classified cases.
+    """
+    try:
+        # Read file content
+        content = await file.read()
+        filename = file.filename or "upload.csv"
+        
+        # Analyze file
+        result = ai_service.analyze_uploaded_file(content, filename)
+        
 # TODO: implement edge case handling
