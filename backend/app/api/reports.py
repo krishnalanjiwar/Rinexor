@@ -538,4 +538,34 @@ async def get_dashboard_kpis(
         Case.status.notin_([CaseStatus.RESOLVED, "closed"])
     ).scalar() or 0
 
+    # Total amounts
+    total_outstanding = db.query(func.sum(Case.current_amount)).scalar() or 0
+    total_original = db.query(func.sum(Case.original_amount)).scalar() or 0
+    recovered_amount = total_original - total_outstanding
+
+    # Recovery rate
+    recovery_rate = (recovered_amount / total_original * 100) if total_original > 0 else 0
+
+    # Active DCAs
+    active_dcas = db.query(func.count(DCA.id)).filter(DCA.is_active == True).scalar() or 0
+
+    # SLA breaches
+    now = datetime.utcnow()
+    sla_breaches = db.query(func.count(Case.id)).filter(
+        or_(
+            and_(Case.sla_contact_deadline < now, Case.first_contact_date.is_(None)),
+            and_(Case.sla_resolution_deadline < now, Case.resolved_date.is_(None))
+        )
+    ).scalar() or 0
+
+    # High priority count
+    high_priority = db.query(func.count(Case.id)).filter(
+        Case.priority == CasePriority.HIGH
+    ).scalar() or 0
+
+    # Cases this month vs last month for change %
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    if month_start.month == 1:
+        last_month_start = month_start.replace(year=month_start.year - 1, month=12)
+    else:
 # TODO: implement edge case handling

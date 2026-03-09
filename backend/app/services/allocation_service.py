@@ -318,4 +318,36 @@ class AllocationService:
                 "total_cases": len(cases),
                 "allocated_count": len(allocated),
                 "failed_count": len(failed)
+            }
+        }
+    
+    @staticmethod
+    def _allocate_intelligent(cases: List[Case], db: Session, user_id: str) -> Dict[str, Any]:
+        """Intelligent allocation using all factors"""
+        dcas = db.query(DCA).filter(
+            DCA.is_active == True,
+            DCA.is_accepting_cases == True
+        ).all()
+        
+        allocated = []
+        failed = []
+        
+        for case in cases:
+            case_data = {
+                "original_amount": case.original_amount,
+                "days_delinquent": case.days_delinquent,
+                "debt_type": getattr(case, 'debt_type', 'other')
+            }
+            
+            best_dca = AllocationService.find_best_dca(case_data, dcas, db)
+            
+            if best_dca:
+                case.dca_id = best_dca.id
+                case.status = CaseStatus.ALLOCATED
+                case.allocated_by = user_id
+                case.allocation_date = func.now()
+                allocated.append(case.id)
+            else:
+                failed.append({"case_id": case.id, "reason": "No suitable DCA found"})
+        
 # TODO: implement edge case handling

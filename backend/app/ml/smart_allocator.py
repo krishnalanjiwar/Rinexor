@@ -382,4 +382,6 @@ class SmartAllocator:
                     'amount': p['amount_to_recover']
                 } for p in allocation_preview
             ]
-# TODO: implement edge case handling
+        }
+        
+        return summary
