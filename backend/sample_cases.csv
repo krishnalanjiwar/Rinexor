@@ -1,0 +1,6 @@
+account_id,debtor_name,debtor_email,debtor_phone,debtor_address,original_amount,current_amount,currency,days_delinquent,debt_age_days,debt_type
+ACC-001,John Doe,john.doe@email.com,+1-555-0123,"123 Main St, City, State 12345",5000.00,4500.00,USD,45,45,credit_card
+ACC-002,Jane Smith,jane.smith@email.com,+1-555-0456,"456 Oak Ave, City, State 67890",12000.00,12000.00,USD,90,90,personal_loan
+ACC-003,Bob Johnson,bob.johnson@email.com,+1-555-0789,"789 Pine Rd, City, State 11111",25000.00,23000.00,USD,120,120,mortgage
+ACC-004,Alice Brown,alice.brown@email.com,+1-555-0321,"321 Elm St, City, State 22222",3500.00,3200.00,USD,30,30,credit_card
+ACC-005,Charlie Wilson,charlie.wilson@email.com,+1-555-0654,"654 Maple Dr, City, State 33333",8000.00,7500.00,USD,60,60,auto_loan

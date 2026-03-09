@@ -60,4 +60,35 @@ src/pages/auth/Login.tsx
 
 src/pages/dashboard/Cases.tsx
 - Real case data from apiClient.getCases()
+- SLA deadline calculation
+- Loading states and error handling
+
+src/pages/dashboard/Overview.tsx
+- Real KPI data from backend
+- Dynamic top agencies list
+- Loading and error states
+
+src/pages/dashboard/Agencies.tsx
+- Real DCA data from backend
+- DCA performance calculations
+- Role-based filtering
+```
+
+---
+
+## Key Integration Points
+
+### Authentication Flow
+```
+Login Page → apiClient.login() → Backend JWT → Token Storage → Authenticated Requests
+```
+
+### Data Fetching Pattern
+```
+Component Mount → useEffect() → apiClient.getCases() → Backend Query → State Update → Render
+```
+
+### Error Handling
+```
+API Call → Error → Catch Block → Error State → Display Message → Retry Option
 
