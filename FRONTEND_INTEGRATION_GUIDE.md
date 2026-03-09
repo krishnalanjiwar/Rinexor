@@ -29,3 +29,33 @@
 
 ---
 
+## 🔌 **Complete API Endpoints**
+
+### **🔐 Authentication**
+```javascript
+// Login
+POST /api/v1/auth/login
+Body: { "username": "admin@rinexor.com", "password": "secret" }
+Response: { "access_token": "...", "token_type": "bearer", "expires_in": 1800 }
+
+// Get Current User
+GET /api/v1/auth/me
+Headers: { "Authorization": "Bearer YOUR_TOKEN" }
+```
+
+### **📋 Cases Management**
+```javascript
+// Get All Cases (with filtering)
+GET /api/v1/cases?status=new&priority=high&dca_id=123&skip=0&limit=20
+
+// Create New Case
+POST /api/v1/cases
+Body: {
+  "account_id": "ACC-001",
+  "debtor_name": "John Doe",
+  "debtor_email": "john@email.com",
+  "original_amount": 5000.00,
+  "days_delinquent": 45,
+  "debt_age_days": 45
+}
+

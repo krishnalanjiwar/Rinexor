@@ -58,4 +58,34 @@ class RiskClassifier:
         # Generate explanation
         explanation = self._generate_explanation(case_data, risk_level, risk_score)
         
+        return {
+            'risk_level': risk_level,
+            'risk_score': round(risk_score, 2),
+            'recovery_probability': round(recovery_prob, 4),
+            'confidence': confidence,
+            'explanation': explanation,
+            'factors': self._get_risk_factors(case_data)
+        }
+    
+    def classify_batch(self, cases: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Classify multiple cases and return distribution statistics.
+        
+        Returns:
+            Dict with classified cases and risk distribution summary
+        """
+        classified_cases = []
+        
+        for case in cases:
+            classification = self.classify_case(case)
+            classified_case = {**case, **classification}
+            classified_cases.append(classified_case)
+        
+        # Calculate distribution
+        distribution = self._calculate_distribution(classified_cases)
+        
+        return {
+            'total_cases': len(cases),
+            'classified_cases': classified_cases,
+            'risk_distribution': distribution,
 # TODO: implement edge case handling

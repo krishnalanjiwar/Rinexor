@@ -58,4 +58,34 @@ class AIService:
     
     def analyze_case(self, case_data: Dict[str, Any]) -> Dict[str, Any]:
         """
+        Complete AI analysis of a single case
+        """
+        # 1. Predict recovery
+        recovery_prediction = self.recovery_model.predict(case_data)
+        
+        # 2. Calculate priority
+        priority_info = self.priority_engine.calculate_priority_score(
+            case_data, recovery_prediction['recovery_probability']
+        )
+        
+        # 3. Generate AI insights
+        insights = {
+            'ai_confidence': recovery_prediction['confidence'],
+            'key_factors': recovery_prediction.get('key_factors', []),
+            'risk_factors': recovery_prediction.get('risk_factors', []),
+            'recommended_strategy': recovery_prediction.get('recommended_action', ''),
+            'expected_roi': priority_info.get('roi_score', 0)
+        }
+        
+        return {
+            **recovery_prediction,
+            **priority_info,
+            'ai_insights': insights,
+            'timestamp': pd.Timestamp.now().isoformat()
+        }
+    
+    def analyze_portfolio(self, cases: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """
+        Analyze entire portfolio of cases
+        """
 # TODO: implement edge case handling

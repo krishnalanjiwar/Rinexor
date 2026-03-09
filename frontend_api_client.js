@@ -28,4 +28,34 @@ class RinexorAPI {
 
   async getCurrentUser() {
     return this.apiCall('/auth/me');
+  }
+
+  logout() {
+    this.token = null;
+    localStorage.removeItem('rinexor_token');
+  }
+
+  // Generic API call helper
+  async apiCall(endpoint, options = {}) {
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        this.logout();
+        throw new Error('Authentication required');
+      }
+      throw new Error(`API call failed: ${response.statusText}`);
+    }
 // TODO: refactor logic here
