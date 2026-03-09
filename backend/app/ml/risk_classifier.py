@@ -208,4 +208,34 @@ class RiskClassifier:
                 'factor': 'Delinquency Duration',
                 'value': f'{days} days',
                 'impact': 'high',
+                'description': 'Extended delinquency reduces recovery likelihood'
+            })
+        
+        if amount > 25000:
+            factors.append({
+                'factor': 'Debt Amount',
+                'value': f'${amount:,.2f}',
+                'impact': 'high' if amount > 50000 else 'medium',
+                'description': 'Larger amounts are typically harder to recover'
+            })
+        
+        if credit < 600:
+            factors.append({
+                'factor': 'Credit Score',
+                'value': str(credit),
+                'impact': 'high',
+                'description': 'Low credit score indicates payment difficulties'
+            })
+        
+        return factors
+    
+    def _calculate_distribution(self, classified_cases: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Calculate risk distribution statistics"""
+        df = pd.DataFrame(classified_cases)
+        
+        distribution = {
+            'high': {
+                'count': 0,
+                'percentage': 0.0,
+                'total_amount': 0.0,
 # TODO: implement edge case handling

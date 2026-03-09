@@ -58,4 +58,34 @@ This repository contains:
 - Backend
   - Python 3.x
   - FastAPI
+  - Uvicorn
+  - python‑jose (JWT)
+  - Pydantic models
+
+- Frontend
+  - React + TypeScript
+  - Vite
+  - Tailwind CSS (dark mode + animations)
+
+---
+
+## 3. Project Structure
+
+```text
+Rinexor/
+├─ backend/
+│  ├─ app/
+│  │  ├─ api/
+│  │  │  ├─ auth.py      # auth, demo users
+│  │  │  └─ cases.py     # cases, DCA metrics, uploads
+│  │  ├─ main.py         # FastAPI app, CORS
+│  │  └─ ...
+│  ├─ requirements.txt
+│  └─ README.md
+│
+├─ frontend/
+│  ├─ src/
+│  │  ├─ app/            # config, auth, TS types, format helpers
+│  │  ├─ pages/          # role dashboards and pages
+│  │  ├─ components/     # reusable UI (cards, tables, badges)
 

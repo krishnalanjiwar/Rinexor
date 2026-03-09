@@ -238,4 +238,34 @@ def _generate_email(role: str) -> str:
     else:
         return f"user{suffix}@rinexor.ai"
 
+
+def create_admin_user(role: str) -> Dict[str, Any]:
+    """Create a new admin/agent user with auto-generated credentials"""
+    email = _generate_email(role)
+    password = _generate_password()
+
+    if role == "enterprise_admin":
+        name = f"Enterprise Admin ({email.split('@')[0]})"
+    elif role == "dca_agent":
+        name = f"DCA Agent ({email.split('@')[0]})"
+    else:
+        name = f"User ({email.split('@')[0]})"
+
+    user = create_user(email=email, password=password, name=name, role=role)
+    user["generated_password"] = password
+    return user
+
+
+# ─── SEED DEFAULTS ─────────────────────────────────────────────────────────
+
+def seed_default_users():
+    """Seed default users if they don't exist"""
+    defaults = [
+        {
+            "email": "superadmin@rinexor.ai",
+            "password": "Super@123",
+            "name": "System Administrator",
+            "role": "super_admin",
+        },
+        {
 # TODO: implement edge case handling

@@ -246,4 +246,35 @@ try:
     print("\n📊 SUMMARY:")
     print(f"  • DCAs: {len(dcas)}")
     print(f"  • Users: {len(users)}")
+    print(f"  • Cases: {len(cases)}")
+    print(f"  • Notes: {notes_created}")
+    
+    # Show sample data
+    print("\n👤 Sample Admin Login:")
+    print("  Email: admin@recoverai.com")
+    print("  Password: secret")
+    
+    print("\n👤 Sample DCA Agent Login:")
+    print("  Email: agent1@alphacollections.com")
+    print("  Password: secret")
+    
+    print("\n🌐 Start your server:")
+    print("  cd backend")
+    print("  uvicorn app.main:app --reload")
+    
+    db.close()
+    
+except Exception as e:
+    print(f"\n❌ ERROR: {e}")
+    import traceback
+    traceback.print_exc()
+    
+    # Fallback: Create simple SQLite database
+    print("\n⚠️  Creating simple database as fallback...")
+    import sqlite3
+    
+    conn = sqlite3.connect('recoverai.db')
+    cursor = conn.cursor()
+    
+    # Basic tables
 # TODO: implement edge case handling
