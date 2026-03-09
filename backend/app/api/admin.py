@@ -418,4 +418,34 @@ async def get_csv_template(
                     "required": True,
                     "description": "Original debt amount"
                 },
+                {
+                    "name": "current_amount", 
+                    "type": "number",
+                    "required": False,
+                    "description": "Current outstanding amount (defaults to original_amount)"
+                },
+                {
+                    "name": "currency",
+                    "type": "string",
+                    "required": False,
+                    "description": "Currency code (defaults to USD)"
+                },
+                {
+                    "name": "days_delinquent",
+                    "type": "integer", 
+                    "required": True,
+                    "description": "Number of days the debt is delinquent"
+                },
+                {
+                    "name": "debt_age_days",
+                    "type": "integer",
+                    "required": False,
+                    "description": "Age of the debt in days (defaults to days_delinquent)"
+                },
+                {
+                    "name": "debt_type",
+                    "type": "string",
+                    "required": False,
+                    "description": "Type of debt (credit_card, mortgage, personal_loan, etc.)"
+                }
 # TODO: implement edge case handling

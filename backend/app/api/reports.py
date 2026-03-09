@@ -628,4 +628,34 @@ async def get_dashboard_recovery_chart(
     ).group_by(func.strftime('%Y-%m', Case.created_at)).order_by(
         func.strftime('%Y-%m', Case.created_at)
     ).all()
+
+    # Build combined data
+    recovery_dict = {r.month: {"recovered": float(r.recovered or 0), "cases_resolved": r.cases_resolved} for r in recovery_by_month}
+    creation_dict = {c.month: {"amount_created": float(c.amount_created or 0), "cases_created": c.cases_created} for c in creation_by_month}
+
+    all_months = sorted(set(recovery_dict.keys()) | set(creation_dict.keys()))
+
+    # Map month strings to short names
+    month_names = {
+        '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr',
+        '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug',
+        '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'
+    }
+
+    chart_data = []
+    for m in all_months:
+        month_num = m.split('-')[1] if '-' in m else m
+        short_name = month_names.get(month_num, m)
+        rec = recovery_dict.get(m, {"recovered": 0, "cases_resolved": 0})
+        cre = creation_dict.get(m, {"amount_created": 0, "cases_created": 0})
+
+        chart_data.append({
+            "name": short_name,
+            "month_key": m,
+            "recovery": round(rec["recovered"], 2),
+            "cases_resolved": rec["cases_resolved"],
+            "amount_created": round(cre["amount_created"], 2),
+            "cases_created": cre["cases_created"],
+        })
+
 # TODO: implement edge case handling

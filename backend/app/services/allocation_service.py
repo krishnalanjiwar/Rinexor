@@ -414,4 +414,6 @@ class AllocationService:
         return {
             "current_cases": current_cases,
             "max_capacity": max_capacity,
-# TODO: implement edge case handling
+            "available_slots": max_capacity - current_cases,
+            "utilization_percentage": round((current_cases / max_capacity) * 100, 1)
+        }

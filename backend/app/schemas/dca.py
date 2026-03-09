@@ -277,4 +277,11 @@ class DCAStatistics(BaseSchema):
     
     # Performance distribution
     high_performers: int  # > 0.8 performance score
-# TODO: implement edge case handling
+    medium_performers: int  # 0.5 - 0.8
+    low_performers: int  # < 0.5
+    
+    # Capacity distribution
+    available_capacity: int
+    limited_capacity: int
+    at_capacity: int
+    over_capacity: int
