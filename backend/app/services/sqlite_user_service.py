@@ -58,4 +58,34 @@ def create_user(
     role: str,
     dca_id: Optional[str] = None,
 ) -> Dict[str, Any]:
+    """Create a new user in SQLite"""
+    db = _get_db()
+    try:
+        existing = db.query(User).filter(User.email == email).first()
+        if existing:
+            raise ValueError(f"User with email '{email}' already exists")
+
+        user = User(
+            id=str(uuid.uuid4()),
+            email=email,
+            hashed_password=_hash_password(password),
+            full_name=name,
+            role=role,
+            dca_id=dca_id,
+            is_active=True,
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        logger.info(f"✅ Created user {email} (role={role})")
+        return _user_to_dict(user)
+    finally:
+        db.close()
+
+
+# ─── READ ──────────────────────────────────────────────────────────────────
+
+def get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
+    db = _get_db()
+    try:
 # TODO: implement edge case handling
