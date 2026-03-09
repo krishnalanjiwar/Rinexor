@@ -33,4 +33,39 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify password against hash"""
+    return pwd_context.verify(plain_password, hashed_password)
+
+def get_password_hash(password: str) -> str:
+    """Create password hash"""
+    return pwd_context.hash(password)
+
+def decode_token(token: str) -> Optional[Dict[str, Any]]:
+    """Decode and verify JWT token"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except JWTError:
+        return None
+
+async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
+    """Get current user from token"""
+    payload = decode_token(token)
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return payload
+
+async def get_current_active_user(current_user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
+    """Get current active user (simple version)"""
+    # For now, just return the user
+    # In production, you'd check if user is active in database
+    return current_user
+
+def require_role(allowed_roles: list):
 # TODO: implement edge case handling

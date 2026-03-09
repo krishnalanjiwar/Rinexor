@@ -29,4 +29,35 @@ The entire Rinexor frontend has been successfully linked to the backend API **wi
 
 ### 4. Data Flow ✅
 - Login → Backend JWT validation
+- Token persisted in localStorage
+- All requests include Bearer token
+- Role-based filtering on backend
+- Real-time data from API
+
+---
+
+## Files Created/Modified
+
+### NEW FILE ✨
+```
+src/services/apiClient.ts (277 lines)
+- Complete API client with 15+ endpoints
+- Type definitions for all data structures
+- Token management and error handling
+```
+
+### MODIFIED FILES 🔧
+```
+src/context/AuthContext.tsx
+- Added loginWithCredentials() for backend auth
+- Enhanced User interface with enterprise/dca IDs
+- Added loading and error state management
+
+src/pages/auth/Login.tsx
+- Real backend authentication
+- Updated demo credentials
+- Proper async form handling
+
+src/pages/dashboard/Cases.tsx
+- Real case data from apiClient.getCases()
 
