@@ -88,4 +88,34 @@ async def get_dca_performance_report(
     query = db.query(DCA).filter(DCA.is_active == True)
     
     if dca_id:
+        query = query.filter(DCA.id == dca_id)
+    
+    dcas = query.all()
+    
+    performance_data = []
+    
+    for dca in dcas:
+        # Cases assigned in period
+        cases_assigned = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id,
+            Case.allocation_date >= period_start
+        ).scalar() or 0
+        
+        # Cases resolved in period
+        cases_resolved = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id,
+            Case.resolved_date >= period_start,
+            Case.status == CaseStatus.RESOLVED
+        ).scalar() or 0
+        
+        # Amount assigned and recovered
+        amount_assigned = db.query(func.sum(Case.original_amount)).filter(
+            Case.dca_id == dca.id,
+            Case.allocation_date >= period_start
+        ).scalar() or 0
+        
+        amount_recovered = db.query(func.sum(Case.original_amount - Case.current_amount)).filter(
+            Case.dca_id == dca.id,
+            Case.resolved_date >= period_start,
+            Case.status == CaseStatus.RESOLVED
 # TODO: implement edge case handling

@@ -31,4 +31,37 @@ class DCACreate(BaseModel):
                 "name": "New Recovery Agency",
                 "code": "NRA001",
                 "contact_person": "John Doe",
+                "email": "john@newrecovery.com",
+                "phone": "+91-9876543210",
+                "address": "Mumbai, India",
+                "max_concurrent_cases": 100,
+                "specialization": ["personal_loans", "credit_cards"]
+            }
+        }
+
+
+class DCAUpdate(BaseModel):
+    name: Optional[str] = None
+    contact_person: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    address: Optional[str] = None
+    max_concurrent_cases: Optional[int] = None
+    specialization: Optional[List[str]] = None
+    is_active: Optional[bool] = None
+    is_accepting_cases: Optional[bool] = None
+
+
+class DCAResponse(BaseModel):
+    id: str
+    name: str
+    code: str
+    contact_person: str
+    email: str
+    phone: Optional[str]
+    address: Optional[str]
+    performance_score: float
+    recovery_rate: float
+    avg_resolution_days: float
+    max_concurrent_cases: int
 # TODO: implement edge case handling
