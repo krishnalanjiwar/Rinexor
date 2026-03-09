@@ -268,4 +268,34 @@ VITE_API_URL=https://api.rinexor.com/api
 ### Prerequisites
 1. Backend running on `http://localhost:8000`
 2. CORS enabled (already configured in backend)
+3. Frontend running on `http://localhost:5173`
+
+### Test Flow
+1. Start backend: `python -m uvicorn app.main:run --reload --port 8000`
+2. Start frontend: `npm run dev`
+3. Navigate to login page
+4. Select role (Super Admin, Enterprise Admin, or DCA User)
+5. Use pre-filled demo credentials
+6. Dashboard loads with real data from backend
+7. All tables and charts show live data from API
+
+---
+
+## Summary of Files Modified
+
+1. ✅ **Created:** `src/services/apiClient.ts` - API client layer
+2. ✅ **Modified:** `src/context/AuthContext.tsx` - Backend authentication
+3. ✅ **Modified:** `src/pages/auth/Login.tsx` - Real login flow
+4. ✅ **Modified:** `src/pages/dashboard/Cases.tsx` - Real case data
+5. ✅ **Modified:** `src/pages/dashboard/Overview.tsx` - Real KPI data
+6. ✅ **Modified:** `src/pages/dashboard/Agencies.tsx` - Real DCA data
+
+---
+
+## Next Steps (Optional Enhancements)
+
+1. **WebSocket Integration** - Real-time case updates
+2. **Pagination** - Backend cursor-based pagination
+3. **Filtering** - Complex filter combinations
+4. **Search** - Full-text case search
 

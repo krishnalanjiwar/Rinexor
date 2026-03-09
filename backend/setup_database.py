@@ -215,4 +215,35 @@ try:
     print(f"✅ Created {len(cases)} cases")
     
     # 4. Create some case notes
+    print("\n📝 Creating sample case notes...")
+    notes_created = 0
+    for case in random.sample(cases, 10):  # Add notes to 10 random cases
+        note_types = ["contact_attempt", "general", "payment_promise", "follow_up"]
+        for j in range(random.randint(1, 3)):
+            from app.models.case_note import CaseNote
+            
+            note = CaseNote(
+                id=str(uuid.uuid4()),
+                case_id=case.id,
+                user_id=random.choice([u.id for u in users if u.role != UserRole.DCA_AGENT]),
+                content=f"Sample note #{j+1} for case {case.account_id}. " +
+                       f"Contact attempted via phone. " +
+                       f"Debtor expressed willingness to discuss payment options.",
+                note_type=random.choice(note_types),
+                contact_method=random.choice(["phone", "email", "letter"]),
+                contact_outcome=random.choice(["successful", "failed", "voicemail"]),
+                created_at=datetime.utcnow() - timedelta(hours=random.randint(1, 72))
+            )
+            db.add(note)
+            notes_created += 1
+    
+    db.commit()
+    print(f"✅ Created {notes_created} case notes")
+    
+    print("\n" + "=" * 60)
+    print("✅ DATABASE SETUP COMPLETE!")
+    print("=" * 60)
+    print("\n📊 SUMMARY:")
+    print(f"  • DCAs: {len(dcas)}")
+    print(f"  • Users: {len(users)}")
 # TODO: implement edge case handling

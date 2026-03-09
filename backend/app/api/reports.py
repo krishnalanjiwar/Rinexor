@@ -208,4 +208,34 @@ async def get_recovery_trends(
         Case.status == CaseStatus.RESOLVED
     ).group_by(date_trunc).order_by(date_trunc).all()
     
+    # Case creation trends
+    creation_trends = db.query(
+        date_trunc.label('period'),
+        func.count(Case.id).label('cases_created'),
+        func.sum(Case.original_amount).label('amount_created')
+    ).filter(
+        Case.created_at >= period_start
+    ).group_by(date_trunc).order_by(date_trunc).all()
+    
+    # Combine data
+    trends_data = []
+    recovery_dict = {str(trend.period): trend for trend in recovery_trends}
+    creation_dict = {str(trend.period): trend for trend in creation_trends}
+    
+    all_periods = set(recovery_dict.keys()) | set(creation_dict.keys())
+    
+    for period in sorted(all_periods):
+        recovery = recovery_dict.get(period)
+        creation = creation_dict.get(period)
+        
+        trends_data.append({
+            "period": period,
+            "cases_created": creation.cases_created if creation else 0,
+            "amount_created": float(creation.amount_created or 0) if creation else 0,
+            "cases_resolved": recovery.cases_resolved if recovery else 0,
+            "amount_recovered": float(recovery.amount_recovered or 0) if recovery else 0,
+            "avg_recovery_score": float(recovery.avg_recovery_score or 0) if recovery else 0
+        })
+    
+    return {
 # TODO: implement edge case handling
