@@ -91,4 +91,35 @@ Component Mount → useEffect() → apiClient.getCases() → Backend Query → S
 ### Error Handling
 ```
 API Call → Error → Catch Block → Error State → Display Message → Retry Option
+```
+
+---
+
+## Backend Endpoints Connected
+
+| Method | Endpoint | Purpose | Status |
+|--------|----------|---------|--------|
+| POST | /api/auth/login | User authentication | ✅ Connected |
+| GET | /api/cases | Fetch all cases | ✅ Connected |
+| GET | /api/cases/{id} | Fetch single case | ✅ Connected |
+| PUT | /api/cases/{id} | Update case | ✅ Integrated |
+| GET | /api/dashboard/kpi | Fetch KPIs | ✅ Connected |
+| GET | /api/dcas | Fetch all DCAs | ✅ Connected |
+| GET | /api/dcas/{id} | Fetch single DCA | ✅ Integrated |
+| GET | /api/dashboard/enterprises | Fetch enterprises | ✅ Integrated |
+| GET | /api/audit | Fetch audit logs | ✅ Integrated |
+| POST | /api/cases/upload | Bulk upload | ✅ Integrated |
+| POST | /api/cases/upload-csv | CSV import | ✅ Integrated |
+
+---
+
+## Demo Credentials (Working)
+
+```
+SUPER ADMIN
+Email: admin@rinexor.com
+Password: admin123
+
+ENTERPRISE ADMIN
+Email: enterprise@demo.com
 

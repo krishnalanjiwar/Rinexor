@@ -88,4 +88,34 @@ class AIService:
         """
         Analyze entire portfolio of cases
         """
+        # 1. Batch recovery prediction
+        batch_prediction = self.pattern_detector.predict_batch_recovery(cases)
+        
+        # 2. Pattern detection
+        patterns = self.pattern_detector.detect_recovery_patterns(cases)
+        
+        # 3. Prioritize all cases
+        prioritized_cases = self.priority_engine.batch_prioritize(cases)
+        
+        # 4. Portfolio insights
+        portfolio_insights = self._generate_portfolio_insights(prioritized_cases)
+        
+        return {
+            'batch_analysis': batch_prediction,
+            'pattern_analysis': patterns,
+            'portfolio_insights': portfolio_insights,
+            'top_priority_cases': prioritized_cases[:10],  # Top 10
+            'total_cases_analyzed': len(cases),
+            'analysis_timestamp': pd.Timestamp.now().isoformat()
+        }
+    
+    def _generate_portfolio_insights(self, cases: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate portfolio-level insights"""
+        if not cases:
+            return {}
+        
+        df = pd.DataFrame(cases)
+        
+        insights = {
+            'high_priority_count': len(df[df['priority_level'] == 'high']),
 # TODO: implement edge case handling

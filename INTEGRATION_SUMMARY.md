@@ -88,4 +88,34 @@ DCA User: dca@demo.com / dca123
 - Converted API case objects to frontend CaseRow format
 - Added SLA deadline calculation (automatically computes days left)
 - Status mapping: API statuses → Frontend UI labels
+- Loading state with spinner
+- Error state with retry button
+- Real-time case data from backend:
+  - Borrower information
+  - Case amounts and priorities
+  - SLA deadlines
+  - Assignment details
+  - Case status
+
+**Data Transformation:**
+- API priority → UI priority bands (High/Medium/Low)
+- SLA deadline → SLA display (e.g., "2 Days Left", "Overdue")
+- API status → Readable status (pending → Active, etc.)
+
+---
+
+## 5. Overview Dashboard Integration
+
+### File Modified: `src/pages/dashboard/Overview.tsx`
+
+**Changes Made:**
+- Fetch KPI data from `apiClient.getKPIs()`
+- Fetch DCA list from `apiClient.getDCAs()` for top agencies
+- Real-time KPI cards showing:
+  - Total cases count
+  - Active case count
+  - Recovery rate percentage
+  - SLA breach count
+- Dynamic top performing agencies list from backend DCA data
+- Loading states for both KPIs and agency list
 

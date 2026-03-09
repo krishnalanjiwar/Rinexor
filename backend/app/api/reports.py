@@ -28,4 +28,34 @@ async def get_dashboard_overview(
     total_cases = db.query(func.count(Case.id)).scalar() or 0
     
     # Cases by status
+    status_counts = db.query(
+        Case.status,
+        func.count(Case.id).label('count')
+    ).group_by(Case.status).all()
+    
+    status_breakdown = {status: count for status, count in status_counts}
+    
+    # Total amounts
+    total_amount = db.query(func.sum(Case.original_amount)).scalar() or 0
+    recovered_amount = db.query(func.sum(Case.original_amount - Case.current_amount)).scalar() or 0
+    
+    # Recovery rate
+    recovery_rate = (recovered_amount / total_amount * 100) if total_amount > 0 else 0
+    
+    # Active DCAs
+    active_dcas = db.query(func.count(DCA.id)).filter(DCA.is_active == True).scalar() or 0
+    
+    # SLA breaches
+    now = datetime.utcnow()
+    sla_breaches = db.query(func.count(Case.id)).filter(
+        or_(
+            and_(Case.sla_contact_deadline < now, Case.first_contact_date.is_(None)),
+            and_(Case.sla_resolution_deadline < now, Case.resolved_date.is_(None))
+        )
+    ).scalar() or 0
+    
+    # Cases created this month
+    month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    cases_this_month = db.query(func.count(Case.id)).filter(
+        Case.created_at >= month_start
 # TODO: implement edge case handling
