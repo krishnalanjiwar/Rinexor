@@ -158,4 +158,36 @@ class WorkflowService:
         """Validate if status transition is allowed"""
         valid_transitions = {
             CaseStatus.NEW: [CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS, CaseStatus.CLOSED],
+            CaseStatus.ALLOCATED: [CaseStatus.IN_PROGRESS, CaseStatus.RETURNED, CaseStatus.CLOSED],
+            CaseStatus.IN_PROGRESS: [CaseStatus.RESOLVED, CaseStatus.ESCALATED, CaseStatus.CLOSED],
+            CaseStatus.ESCALATED: [CaseStatus.IN_PROGRESS, CaseStatus.RESOLVED, CaseStatus.CLOSED],
+            CaseStatus.RESOLVED: [CaseStatus.CLOSED, CaseStatus.IN_PROGRESS],
+            CaseStatus.RETURNED: [CaseStatus.NEW, CaseStatus.ALLOCATED],
+            CaseStatus.CLOSED: []  # Final state
+        }
+        
+        return new_status in valid_transitions.get(current_status, [])
+    
+    @staticmethod
+    def _log_status_change(case: Case, new_status: str, user_id: str, db: Session):
+        """Log status change in audit trail"""
+        from app.models.audit import AuditLog
+        import uuid
+        
+        audit = AuditLog(
+            id=str(uuid.uuid4()),
+            entity_type="case",
+            entity_id=case.id,
+            action="status_change",
+            old_values={"status": case.status},
+            new_values={"status": new_status},
+            user_id=user_id,
+            timestamp=datetime.utcnow()
+        )
+        
+        db.add(audit)
+    
+    @staticmethod
+    def check_sla_breaches(db: Session) -> list:
+        """Check for SLA breaches across all active cases"""
 # TODO: implement edge case handling

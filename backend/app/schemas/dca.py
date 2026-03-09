@@ -153,4 +153,35 @@ class DCAAllocationRequest(BaseSchema):
             raise ValueError('Cannot allocate more than 100 cases at once')
         return v
 
+
+class DCAAllocationResponse(BaseSchema):
+    """Schema for DCA allocation response"""
+    total_cases: int
+    allocated_count: int
+    failed_count: int
+    allocated_cases: List[str]
+    failed_cases: List[Dict[str, Any]]
+    allocation_summary: Dict[str, Any]
+
+
+class DCARecommendation(BaseSchema):
+    """Schema for DCA allocation recommendations"""
+    dca_id: str
+    dca_name: str
+    dca_code: str
+    allocation_score: float
+    performance_score: float
+    capacity_info: DCACapacityInfo
+    specialization_match: float
+    recommendation_reason: str
+    estimated_resolution_days: Optional[int] = None
+
+
+class DCARecommendationResponse(BaseSchema):
+    """Schema for DCA recommendation API response"""
+    case_id: str
+    recommendations: List[DCARecommendation]
+    total_recommendations: int
+    best_match: Optional[DCARecommendation] = None
+
 # TODO: implement edge case handling

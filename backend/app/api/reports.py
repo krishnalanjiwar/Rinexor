@@ -388,4 +388,34 @@ async def get_portfolio_analysis(
             ).scalar() or 0
             amount = db.query(func.sum(Case.original_amount)).filter(
                 and_(Case.days_delinquent >= min_days, Case.days_delinquent <= max_days)
+            ).scalar() or 0
+        
+        age_distribution[label] = {
+            "count": count,
+            "amount": float(amount or 0)
+        }
+    
+    # DCA allocation summary
+    dca_allocation = db.query(
+        DCA.name,
+        DCA.code,
+        func.count(Case.id).label('cases_assigned'),
+        func.sum(Case.original_amount).label('amount_assigned')
+    ).join(Case, DCA.id == Case.dca_id).group_by(DCA.id, DCA.name, DCA.code).all()
+    
+    dca_data = []
+    for name, code, cases, amount in dca_allocation:
+        dca_data.append({
+            "dca_name": name,
+            "dca_code": code,
+            "cases_assigned": cases,
+            "amount_assigned": float(amount or 0)
+        })
+    
+    # Unallocated cases
+    unallocated_cases = db.query(func.count(Case.id)).filter(Case.dca_id.is_(None)).scalar() or 0
+    unallocated_amount = db.query(func.sum(Case.original_amount)).filter(Case.dca_id.is_(None)).scalar() or 0
+    
+    return {
+        "portfolio_summary": {
 # TODO: implement edge case handling

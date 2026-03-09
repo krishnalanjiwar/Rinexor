@@ -119,3 +119,33 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+API URLs:
+
+- `http://127.0.0.1:8000/`
+- `http://127.0.0.1:8000/docs`
+
+### 4.3 Frontend (React + Vite)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Then open the Vite dev server URL printed in the terminal, typically:
+
+- `http://localhost:5173`
+or
+- `http://localhost:5174`
+
+---
+
+## 5. Demo Users and Roles
+
+Defined in `backend/app/api/auth.py`:
+
+- Super Admin
+  - Email: `admin@rinexor.com`
+  - Password: `admin123`
+
+
