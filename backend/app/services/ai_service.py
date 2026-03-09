@@ -298,4 +298,34 @@ class AIService:
         return df
     
     def analyze_uploaded_file(self, file_content: bytes, filename: str) -> Dict[str, Any]:
+        """
+        Analyze uploaded file: parse, classify risks, and return distribution.
+        
+        Args:
+            file_content: Raw file bytes
+            filename: Original filename
+            
+        Returns:
+            Risk analysis results with distribution
+        """
+        # Parse file
+        parse_result = self.parse_uploaded_file(file_content, filename)
+        
+        if not parse_result['success']:
+            return parse_result
+        
+        cases = parse_result['cases']
+        
+        # Classify risks
+        classification_result = self.risk_classifier.classify_batch(cases)
+        
+        return convert_numpy_types({
+            'success': True,
+            'total_cases': classification_result['total_cases'],
+            'risk_distribution': classification_result['risk_distribution'],
+            'classified_cases': classification_result['classified_cases'],
+            'classification_timestamp': classification_result['classification_timestamp']
+        })
+    
+    def get_allocation_preview(
 # TODO: implement edge case handling

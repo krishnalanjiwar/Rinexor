@@ -478,4 +478,34 @@ async def export_cases_report(
             "account_id": case.account_id,
             "debtor_name": case.debtor_name,
             "debtor_email": case.debtor_email,
+            "debtor_phone": case.debtor_phone,
+            "original_amount": case.original_amount,
+            "current_amount": case.current_amount,
+            "days_delinquent": case.days_delinquent,
+            "status": case.status,
+            "priority": case.priority,
+            "recovery_score": case.recovery_score,
+            "dca_name": dca_name,
+            "created_at": case.created_at.isoformat() if case.created_at else None,
+            "allocation_date": case.allocation_date.isoformat() if case.allocation_date else None,
+            "resolved_date": case.resolved_date.isoformat() if case.resolved_date else None
+        })
+    
+    if format.lower() == "csv":
+        # For CSV format, return structured data that frontend can convert
+        return {
+            "format": "csv",
+            "filename": f"cases_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv",
+            "data": export_data,
+            "total_records": len(export_data)
+        }
+    
+    # Default JSON format
+    return {
+        "format": "json",
+        "filename": f"cases_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json",
+        "data": export_data,
+        "total_records": len(export_data),
+        "export_metadata": {
+            "exported_by": current_user["email"],
 # TODO: implement edge case handling

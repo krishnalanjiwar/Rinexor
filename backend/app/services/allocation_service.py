@@ -254,4 +254,36 @@ class AllocationService:
                     # Re-sort to maintain order
                     dca_capacity.sort(key=lambda x: x[1], reverse=True)
             else:
+                failed.append({"case_id": case.id, "reason": "No available capacity"})
+        
+        db.commit()
+        
+        return {
+            "allocated": allocated,
+            "failed": failed,
+            "summary": {
+                "total_cases": len(cases),
+                "allocated_count": len(allocated),
+                "failed_count": len(failed)
+            }
+        }
+    
+    @staticmethod
+    def _allocate_round_robin(cases: List[Case], db: Session, user_id: str) -> Dict[str, Any]:
+        """Allocate cases in round-robin fashion across available DCAs"""
+        dcas = db.query(DCA).filter(
+            DCA.is_active == True,
+            DCA.is_accepting_cases == True
+        ).all()
+        
+        if not dcas:
+            return {
+                "allocated": [],
+                "failed": [{"case_id": case.id, "reason": "No available DCAs"} for case in cases],
+                "summary": {"total_cases": len(cases), "allocated_count": 0, "failed_count": len(cases)}
+            }
+        
+        allocated = []
+        failed = []
+        dca_index = 0
 # TODO: implement edge case handling

@@ -401,4 +401,6 @@ async def confirm_allocation(
         }
     except HTTPException:
         raise
-# TODO: implement edge case handling
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Allocation failed: {str(e)}")
