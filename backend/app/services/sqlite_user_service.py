@@ -118,4 +118,34 @@ def get_all_users(skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
 
 # ─── UPDATE ────────────────────────────────────────────────────────────────
 
+def update_user(user_id: str, updates: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    db = _get_db()
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return None
+
+        if "password" in updates:
+            user.hashed_password = _hash_password(updates.pop("password"))
+        if "name" in updates:
+            user.full_name = updates.pop("name")
+        if "email" in updates:
+            user.email = updates["email"]
+        if "role" in updates:
+            user.role = updates["role"]
+        if "is_active" in updates:
+            user.is_active = updates["is_active"]
+        if "dca_id" in updates:
+            user.dca_id = updates["dca_id"]
+
+        db.commit()
+        db.refresh(user)
+        logger.info(f"✅ Updated user {user_id}")
+        return _user_to_dict(user)
+    finally:
+        db.close()
+
+
+def disable_user(user_id: str) -> Optional[Dict[str, Any]]:
+    """Toggle user active status"""
 # TODO: implement edge case handling

@@ -88,4 +88,34 @@ GET /api/v1/dcas?active_only=true&skip=0&limit=100
 
 // Create New DCA
 POST /api/v1/dcas
+Body: {
+  "name": "New Collection Agency",
+  "code": "NCA-001",
+  "contact_person": "Jane Manager",
+  "email": "contact@newagency.com"
+}
+
+// Get Specific DCA
+GET /api/v1/dcas/{dca_id}
+
+// Update DCA
+PUT /api/v1/dcas/{dca_id}
+
+// Get DCA Performance
+GET /api/v1/dcas/{dca_id}/performance
+
+// Get DCA Cases
+GET /api/v1/dcas/{dca_id}/cases
+
+// Recalculate Performance
+POST /api/v1/dcas/{dca_id}/recalculate-performance
+```
+
+### **🧠 AI & Analytics**
+```javascript
+// Analyze Single Case
+POST /api/v1/ai/analyze-case
+Body: {
+  "original_amount": 5000,
+  "days_delinquent": 45,
 
