@@ -196,4 +196,37 @@ async def delete_dca(
     dca = db.query(DCA).filter(DCA.id == dca_id).first()
     
     if not dca:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="DCA not found"
+        )
+    
+    # Soft delete - just mark as inactive
+    dca.is_active = False
+    dca.is_accepting_cases = False
+    dca.updated_at = datetime.now()
+    
+    db.commit()
+    
+    return {"message": f"DCA '{dca.name}' has been deactivated"}
+
+
+@router.post("/{dca_id}/activate")
+async def activate_dca(
+    dca_id: str,
+    db: Session = Depends(get_db)
+):
+    """Activate a DCA to start accepting cases"""
+    dca = db.query(DCA).filter(DCA.id == dca_id).first()
+    
+    if not dca:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="DCA not found"
+        )
+    
+    dca.is_active = True
+    dca.is_accepting_cases = True
+    dca.updated_at = datetime.now()
+    
 # TODO: implement edge case handling

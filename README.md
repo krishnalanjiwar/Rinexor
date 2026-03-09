@@ -88,4 +88,34 @@ Rinexor/
 │  │  ├─ app/            # config, auth, TS types, format helpers
 │  │  ├─ pages/          # role dashboards and pages
 │  │  ├─ components/     # reusable UI (cards, tables, badges)
+│  │  └─ App.tsx         # router + layout
+│  ├─ tailwind.config.js
+│  ├─ package.json
+│  └─ README.md
+│
+├─ docs/
+├─ README.md             # this file
+└─ LICENSE
+```
+
+---
+
+## 4. Getting Started
+
+### 4.1 Prerequisites
+
+- Node.js (LTS)
+- npm
+- Python 3.10+
+
+### 4.2 Backend (FastAPI)
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
 

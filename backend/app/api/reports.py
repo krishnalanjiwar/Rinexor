@@ -298,4 +298,34 @@ async def get_sla_compliance_report(
     ).filter(
         Case.created_at >= period_start,
         or_(
+            and_(Case.sla_contact_deadline < now, Case.first_contact_date.is_(None)),
+            and_(Case.sla_resolution_deadline < now, Case.resolved_date.is_(None))
+        )
+    ).group_by(Case.priority).all()
+    
+    priority_breach_breakdown = {priority: count for priority, count in priority_breaches}
+    
+    return {
+        "period_start": period_start.isoformat(),
+        "period_end": datetime.utcnow().isoformat(),
+        "contact_sla": {
+            "total_cases": contact_sla_total,
+            "met": contact_sla_met,
+            "breached": contact_sla_breached,
+            "compliance_rate": round(contact_compliance_rate, 2)
+        },
+        "resolution_sla": {
+            "total_cases": resolution_sla_total,
+            "met": resolution_sla_met,
+            "breached": resolution_sla_breached,
+            "compliance_rate": round(resolution_compliance_rate, 2)
+        },
+        "priority_breach_breakdown": priority_breach_breakdown,
+        "overall_compliance_rate": round((contact_compliance_rate + resolution_compliance_rate) / 2, 2)
+    }
+
+
+@router.get("/portfolio/analysis")
+async def get_portfolio_analysis(
+    db: Session = Depends(get_db),
 # TODO: implement edge case handling
