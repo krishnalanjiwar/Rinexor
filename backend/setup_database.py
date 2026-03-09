@@ -184,4 +184,35 @@ try:
                 debtor_email=f"{debtor.lower().replace(' ', '.')}@example.com",
                 debtor_phone=f"+1-555-{8000 + case_counter}",
                 original_amount=amount,
+                current_amount=round(amount * random.uniform(0.5, 1.0), 2),
+                currency="USD",
+                days_delinquent=days_delinquent,
+                debt_age_days=days_delinquent + random.randint(0, 30),
+                status=status,
+                priority=priority,
+                recovery_score=recovery_score,
+                recovery_score_band=band,
+                dca_id=dca_id,
+                allocated_by=admin.id if dca_id else None,
+                allocation_date=datetime.utcnow() - timedelta(days=random.randint(1, 10)) if dca_id else None,
+                ml_features={
+                    "debt_age": days_delinquent,
+                    "amount": amount,
+                    "credit_score": random.randint(580, 750),
+                    "employment_status": random.choice(["employed", "self-employed", "unemployed"])
+                },
+                sla_contact_deadline=datetime.utcnow() + timedelta(days=random.randint(1, 7)),
+                sla_resolution_deadline=datetime.utcnow() + timedelta(days=random.randint(20, 60)),
+                sla_breached=False,
+                created_at=datetime.utcnow() - timedelta(days=random.randint(1, 30))
+            )
+            
+            cases.append(case)
+            db.add(case)
+            case_counter += 1
+    
+    db.commit()
+    print(f"✅ Created {len(cases)} cases")
+    
+    # 4. Create some case notes
 # TODO: implement edge case handling

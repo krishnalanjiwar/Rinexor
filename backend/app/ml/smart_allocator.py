@@ -126,4 +126,36 @@ class SmartAllocator:
         
         allocated = []
         failed = []
+        
+        # Create case lookup by account_id or a unique identifier
+        case_lookup = {c.get('account_id', c.get('id', str(i))): c 
+                      for i, c in enumerate(cases)}
+        
+        for preview in allocation_preview:
+            dca_id = preview['dca_id']
+            assigned_cases = preview.get('assigned_case_ids', [])
+            
+            for case_identifier in assigned_cases:
+                try:
+                    # Find case in database
+                    case = db.query(Case).filter(
+                        Case.account_id == case_identifier
+                    ).first()
+                    
+                    if case:
+                        case.dca_id = dca_id
+                        case.status = CaseStatus.ALLOCATED
+                        case.allocated_by = user_id
+                        case.allocation_date = datetime.now()
+                        
+                        # Store risk classification in ML features
+                        original_case = case_lookup.get(case_identifier, {})
+                        case.ml_features = {
+                            'risk_level': original_case.get('risk_level'),
+                            'risk_score': original_case.get('risk_score'),
+                            'allocation_method': 'smart_risk_based'
+                        }
+                        
+                        allocated.append(case_identifier)
+                    else:
 # TODO: implement edge case handling

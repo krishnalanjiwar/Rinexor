@@ -94,4 +94,35 @@ async def startup_event():
     try:
         from app.services.ai_service import AIService
         ai_service = AIService()
-# TODO: implement edge case handling
+        ai_service.initialize()
+        logger.info("✅ AI service initialized")
+    except Exception as e:
+        logger.warning(f"⚠️ AI service warning (non-critical): {e}")
+
+    logger.info("✅ Rinexor Backend started successfully!")
+
+
+@app.get("/")
+def root():
+    """Health check endpoint"""
+    return {
+        "status": "running",
+        "app": "Rinexor API",
+        "version": "1.0.0",
+        "docs": "/docs"
+    }
+
+
+@app.get("/api/health")
+def health_check():
+    """API health check"""
+    return {"status": "healthy", "api": "v1"}
+
+
+# For running directly with python main.py
+if __name__ == "__main__":
+    import uvicorn
+    port = 8000
+    logger.info(f"🚀 Starting on port {port}")
+    logger.info(f"📚 Docs: http://localhost:{port}/docs")
+    uvicorn.run(app, host="0.0.0.0", port=port)
