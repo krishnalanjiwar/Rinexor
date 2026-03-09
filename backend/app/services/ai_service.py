@@ -358,4 +358,11 @@ class AIService:
         
         Args:
             allocation_preview: Approved allocation preview
-# TODO: implement edge case handling
+            cases: Original case data
+            db: Database session
+            user_id: User performing allocation
+            
+        Returns:
+            Allocation result
+        """
+        return self.smart_allocator.confirm_allocation(allocation_preview, cases, db, user_id)

@@ -350,4 +350,36 @@ class SmartAllocator:
         total_amount = sum(c.get('original_amount', 0) for c in classified_cases)
         
         # Count by risk level
+        high_risk = [c for c in classified_cases if c.get('risk_level') == 'high']
+        intermediate = [c for c in classified_cases if c.get('risk_level') == 'intermediate']
+        low_risk = [c for c in classified_cases if c.get('risk_level') == 'low']
+        
+        summary = {
+            'total_cases': total_cases,
+            'total_amount': round(total_amount, 2),
+            'total_dcas_assigned': len(allocation_preview),
+            'risk_summary': {
+                'high': {
+                    'count': len(high_risk),
+                    'percentage': round((len(high_risk) / total_cases) * 100, 1) if total_cases > 0 else 0,
+                    'amount': round(sum(c.get('original_amount', 0) for c in high_risk), 2)
+                },
+                'intermediate': {
+                    'count': len(intermediate),
+                    'percentage': round((len(intermediate) / total_cases) * 100, 1) if total_cases > 0 else 0,
+                    'amount': round(sum(c.get('original_amount', 0) for c in intermediate), 2)
+                },
+                'low': {
+                    'count': len(low_risk),
+                    'percentage': round((len(low_risk) / total_cases) * 100, 1) if total_cases > 0 else 0,
+                    'amount': round(sum(c.get('original_amount', 0) for c in low_risk), 2)
+                }
+            },
+            'dca_summary': [
+                {
+                    'dca_name': p['dca_name'],
+                    'cases': p['assigned_cases'],
+                    'amount': p['amount_to_recover']
+                } for p in allocation_preview
+            ]
 # TODO: implement edge case handling

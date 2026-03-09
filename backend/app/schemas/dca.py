@@ -246,4 +246,35 @@ class DCAPerformanceUpdate(BaseSchema):
     @validator('sla_compliance_rate')
     def validate_sla_compliance_rate(cls, v):
         if v is not None and (v < 0 or v > 100):
+            raise ValueError('SLA compliance rate must be between 0 and 100')
+        return v
+
+
+class DCABulkUpdate(BaseSchema):
+    """Schema for bulk DCA updates"""
+    dca_ids: List[str]
+    updates: DCAUpdate
+    
+    @validator('dca_ids')
+    def validate_dca_ids(cls, v):
+        if not v or len(v) == 0:
+            raise ValueError('At least one DCA ID must be provided')
+        if len(v) > 50:
+            raise ValueError('Cannot update more than 50 DCAs at once')
+        return v
+
+
+class DCAStatistics(BaseSchema):
+    """Schema for DCA statistics summary"""
+    total_dcas: int
+    active_dcas: int
+    accepting_cases_dcas: int
+    avg_performance_score: float
+    avg_recovery_rate: float
+    total_capacity: int
+    total_active_cases: int
+    overall_utilization: float
+    
+    # Performance distribution
+    high_performers: int  # > 0.8 performance score
 # TODO: implement edge case handling

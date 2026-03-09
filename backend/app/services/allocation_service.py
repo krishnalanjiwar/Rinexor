@@ -286,4 +286,36 @@ class AllocationService:
         allocated = []
         failed = []
         dca_index = 0
+        
+        for case in cases:
+            # Check if current DCA has capacity
+            current_dca = dcas[dca_index]
+            current_cases = db.query(func.count(Case.id)).filter(
+                Case.dca_id == current_dca.id,
+                Case.status.in_([CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS])
+            ).scalar() or 0
+            
+            max_capacity = getattr(current_dca, 'max_concurrent_cases', 50)
+            
+            if current_cases < max_capacity:
+                case.dca_id = current_dca.id
+                case.status = CaseStatus.ALLOCATED
+                case.allocated_by = user_id
+                case.allocation_date = func.now()
+                allocated.append(case.id)
+            else:
+                failed.append({"case_id": case.id, "reason": f"DCA {current_dca.code} at capacity"})
+            
+            # Move to next DCA
+            dca_index = (dca_index + 1) % len(dcas)
+        
+        db.commit()
+        
+        return {
+            "allocated": allocated,
+            "failed": failed,
+            "summary": {
+                "total_cases": len(cases),
+                "allocated_count": len(allocated),
+                "failed_count": len(failed)
 # TODO: implement edge case handling
