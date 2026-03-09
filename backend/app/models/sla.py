@@ -39,4 +39,44 @@ class SLARule(Base):
     # Actions to take when triggered
     actions = Column(JSON, nullable=False)
     # Example: [{"action": "notify", "recipients": ["admin"], "template": "sla_breach"}]
-# TODO: implement edge case handling
+    
+    # Escalation chain
+    escalation_level = Column(Integer, default=1)
+    next_escalation_rule_id = Column(String, ForeignKey("sla_rules.id"), nullable=True)
+    
+    # Status
+    is_active = Column(Boolean, default=True)
+    
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    last_triggered = Column(DateTime(timezone=True), nullable=True)
+    
+    def __repr__(self):
+        return f"<SLARule {self.name} ({self.rule_type})>"
+
+class SLABreach(Base):
+    __tablename__ = "sla_breaches"
+    
+    id = Column(String, primary_key=True, index=True)
+    
+    # What was breached
+    case_id = Column(String, ForeignKey("cases.id"), nullable=False, index=True)
+    breach_type = Column(String, nullable=False)  # "contact_sla" or "resolution_sla"
+    
+    # Breach details
+    detected_at = Column(DateTime, server_default=func.now())
+    deadline = Column(DateTime, nullable=False)
+    days_overdue = Column(Integer, nullable=False)
+    
+    # Resolution
+    is_resolved = Column(Boolean, default=False)
+    resolved_at = Column(DateTime, nullable=True)
+    resolved_by = Column(String, ForeignKey("users.id"), nullable=True)
+    resolution_notes = Column(Text)
+    
+    # Timestamps
+    created_at = Column(DateTime, server_default=func.now())
+    
+    def __repr__(self):
+        return f"<SLABreach for Case {self.case_id[:8]}... Type {self.breach_type}>"

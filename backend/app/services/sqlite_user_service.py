@@ -88,4 +88,34 @@ def create_user(
 def get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
     db = _get_db()
     try:
+        user = db.query(User).filter(User.id == user_id).first()
+        return _user_to_dict(user) if user else None
+    finally:
+        db.close()
+
+
+def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
+    db = _get_db()
+    try:
+        user = db.query(User).filter(User.email == email).first()
+        if user:
+            result = _user_to_dict(user)
+            result["hashed_password"] = user.hashed_password
+            return result
+        return None
+    finally:
+        db.close()
+
+
+def get_all_users(skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
+    db = _get_db()
+    try:
+        users = db.query(User).offset(skip).limit(limit).all()
+        return [_user_to_dict(u) for u in users]
+    finally:
+        db.close()
+
+
+# ─── UPDATE ────────────────────────────────────────────────────────────────
+
 # TODO: implement edge case handling
