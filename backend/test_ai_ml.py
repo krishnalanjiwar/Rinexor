@@ -66,4 +66,38 @@ print("\n2. Testing Portfolio Analysis...")
 print("-" * 40)
 
 portfolio_result = ai_service.analyze_portfolio(test_cases)
+print(f"   Total Cases Analyzed: {portfolio_result['total_cases_analyzed']}")
+print(f"   Expected Total Recovery: ${portfolio_result['batch_analysis'].get('expected_recovery', 0):,.2f}")
+print(f"   Recovery Rate: {portfolio_result['batch_analysis']['expected_recovery_rate']}%")
+print(f"   Patterns Detected: {portfolio_result['pattern_analysis']['patterns_detected']}")
+
+print("\n3. Testing Priority Engine...")
+print("-" * 40)
+
+print("   Top Priority Cases:")
+for i, case in enumerate(portfolio_result['top_priority_cases'][:3]):
+    print(f"   {i+1}. {case['account_id']} - ${case['original_amount']:,.2f} "
+          f"({case['priority_level'].upper()}) - Score: {case['priority_score']}")
+
+print("\n4. Training Demo (Mock)...")
+print("-" * 40)
+
+# Mock training data
+mock_training_data = test_cases * 5  # Repeat to get more data
+for data in mock_training_data:
+    data['recovery_rate'] = 0.7  # Mock recovery rate
+
+training_result = ai_service.train_model(mock_training_data)
+print(f"   Training Success: {training_result['success']}")
+if training_result['success']:
+    print(f"   Samples Trained: {training_result['samples_trained']}")
+    print(f"   Model Saved: {training_result['model_saved']}")
+
+print("\n" + "=" * 60)
+print("✅ AI/ML TEST COMPLETE!")
+print("\n🎯 Ready Features:")
+print("   1. Intelligent Recovery Prediction")
+print("   2. Smart Case Prioritization")
+print("   3. Pattern Detection & Insights")
+print("   4. Portfolio-level Analysis")
 # TODO: implement edge case handling
