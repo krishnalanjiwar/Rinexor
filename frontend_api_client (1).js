@@ -178,4 +178,34 @@ class RinexorAPI {
     const params = new URLSearchParams({ period_days: periodDays, granularity });
     return this.apiCall(`/reports/recovery/trends?${params}`);
   }
+
+  async getSLACompliance(periodDays = 30) {
+    const params = new URLSearchParams({ period_days: periodDays });
+    return this.apiCall(`/reports/sla/compliance?${params}`);
+  }
+
+  async getPortfolioAnalysis() {
+    return this.apiCall('/reports/portfolio/analysis');
+  }
+
+  async exportCases(filters = {}) {
+    const params = new URLSearchParams(filters);
+    return this.apiCall(`/reports/export/cases?${params}`);
+  }
+
+  // Admin Functions
+  async getUsers(filters = {}) {
+    const params = new URLSearchParams(filters);
+    return this.apiCall(`/admin/users?${params}`);
+  }
+
+  async createUser(userData) {
+    return this.apiCall('/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(userData)
+    });
+  }
+
+  async uploadCases(file) {
+    const formData = new FormData();
 // TODO: refactor logic here

@@ -208,4 +208,34 @@ class AIService:
             required_columns = ['debtor_name', 'original_amount']
             missing_columns = [col for col in required_columns if col not in df.columns]
             
+            if missing_columns:
+                # Try to find similar columns
+                column_mapping = self._find_similar_columns(df.columns.tolist(), required_columns)
+                for orig, mapped in column_mapping.items():
+                    if mapped:
+                        df = df.rename(columns={mapped: orig})
+                
+                # Re-check
+                missing_columns = [col for col in required_columns if col not in df.columns]
+                if missing_columns:
+                    return {
+                        'success': False,
+                        'error': f'Missing required columns: {missing_columns}',
+                        'available_columns': df.columns.tolist()
+                    }
+            
+            # Clean and convert data
+            df = self._clean_case_data(df)
+            
+            # Convert to list of dicts
+            cases = df.to_dict('records')
+            
+            return {
+                'success': True,
+                'total_cases': len(cases),
+                'cases': cases,
+                'columns_found': df.columns.tolist()
+            }
+            
+        except Exception as e:
 # TODO: implement edge case handling

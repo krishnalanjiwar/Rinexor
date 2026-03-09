@@ -268,4 +268,33 @@ def seed_default_users():
             "role": "super_admin",
         },
         {
-# TODO: implement edge case handling
+            "email": "admin@enterprise.com",
+            "password": "Enterprise@123",
+            "name": "John Doe",
+            "role": "enterprise_admin",
+        },
+        {
+            "email": "agent@dca.com",
+            "password": "DCA@123",
+            "name": "Agent Smith",
+            "role": "dca_agent",
+        },
+    ]
+
+    count = 0
+    for u in defaults:
+        existing = get_user_by_email(u["email"])
+        if not existing:
+            try:
+                create_user(
+                    email=u["email"],
+                    password=u["password"],
+                    name=u["name"],
+                    role=u["role"],
+                )
+                count += 1
+            except ValueError:
+                pass
+    if count:
+        logger.info(f"✅ Seeded {count} default users")
+    return count

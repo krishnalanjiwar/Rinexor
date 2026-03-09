@@ -163,4 +163,37 @@ def update_user(user_id: str, updates: Dict[str, Any]) -> Optional[Dict[str, Any
     payload.update(updates)
     payload["updated_at"] = datetime.utcnow().isoformat()
 
+    client.set_payload(
+        collection_name=USERS_COLLECTION,
+        payload=payload,
+        points=[user_id],
+    )
+
+    logger.info(f"✅ Updated user {user_id}")
+    return {"id": user_id, **payload}
+
+
+# ─── DELETE ────────────────────────────────────────────────────────────────
+
+def delete_user(user_id: str) -> bool:
+    """Delete a user by ID"""
+    client = get_qdrant_client()
+    try:
+        client.delete(
+            collection_name=USERS_COLLECTION,
+            points_selector=[user_id],
+        )
+        logger.info(f"✅ Deleted user {user_id}")
+        return True
+    except Exception as e:
+        logger.error(f"Error deleting user {user_id}: {e}")
+        return False
+
+
+# ─── AUTH ──────────────────────────────────────────────────────────────────
+
+def authenticate_user(email: str, password: str) -> Optional[Dict[str, Any]]:
+    """Authenticate by email + password. Returns user dict or None."""
+    user = get_user_by_email(email)
+    if not user:
 # TODO: implement edge case handling
