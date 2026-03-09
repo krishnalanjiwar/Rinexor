@@ -62,4 +62,36 @@ class WorkflowService:
         
         return CasePriority.LOW
     
+    @staticmethod
+    def _calculate_sla_deadlines(priority: str) -> Dict[str, datetime]:
+        """Calculate SLA deadlines based on priority"""
+        now = datetime.utcnow()
+        
+        if priority == CasePriority.HIGH:
+            contact_days = 1
+            resolution_days = 7
+        elif priority == CasePriority.MEDIUM:
+            contact_days = 3
+            resolution_days = 15
+        else:  # LOW
+            contact_days = 5
+            resolution_days = 30
+        
+        return {
+            "contact": now + timedelta(days=contact_days),
+            "resolution": now + timedelta(days=resolution_days)
+        }
+    
+    @staticmethod
+    def _auto_allocate_dca(case_data: Dict[str, Any], db: Session) -> Optional[DCA]:
+        """
+        Auto-allocate case to best available DCA based on:
+        1. Capacity availability
+        2. Performance score
+        3. Specialization match
+        """
+        from app.services.allocation_service import AllocationService
+        
+        # Get available DCAs
+        available_dcas = db.query(DCA).filter(
 # TODO: implement edge case handling

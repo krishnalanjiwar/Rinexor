@@ -60,4 +60,35 @@ async def analyze_portfolio(
         else:
             # Get all cases user has access to
             query = db.query(Case)
+            
+            if current_user["role"] == "dca_agent":
+                query = query.filter(Case.dca_id == current_user.get("dca_id"))
+            elif current_user["role"] == "collection_manager":
+                if current_user.get("dca_id"):
+                    query = query.filter(Case.dca_id == current_user.get("dca_id"))
+            
+            cases = query.all()
+            case_dicts = [case.__dict__ for case in cases]
+        
+        # Remove SQLAlchemy instance state
+        for case in case_dicts:
+            if '_sa_instance_state' in case:
+                del case['_sa_instance_state']
+        
+        result = ai_service.analyze_portfolio(case_dicts)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Portfolio analysis failed: {str(e)}")
+
+@router.get("/patterns")
+async def detect_patterns(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_role(["enterprise_admin", "collection_manager"]))
+):
+    """Detect patterns in case data"""
+    try:
+        # Get all cases
+        query = db.query(Case)
+        
+        if current_user["role"] == "collection_manager" and current_user.get("dca_id"):
 # TODO: implement edge case handling

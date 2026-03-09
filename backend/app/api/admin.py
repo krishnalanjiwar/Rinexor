@@ -88,4 +88,34 @@ async def deactivate_user(
     return {"message": "User deactivated successfully"}
 
 @router.post("/sla/check-violations")
+async def check_sla_violations(
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_role(["enterprise_admin", "collection_manager"]))
+):
+    """Check for SLA violations"""
+    violations = WorkflowService.check_sla_violations(db)
+    
+    return {
+        "violations_found": len(violations),
+        "violations": violations[:50],  # Return top 50
+        "checked_at": datetime.utcnow()
+    }
+
+@router.get("/system-stats")
+async def get_system_stats(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_role(["enterprise_admin"]))
+):
+    """Get system statistics (admin only)"""
+    from sqlalchemy import func
+    
+    # User stats
+    total_users = db.query(func.count(User.id)).scalar()
+    active_users = db.query(func.count(User.id)).filter(User.is_active == True).scalar()
+    
+    # DCA stats
+    total_dcas = db.query(func.count(DCA.id)).scalar()
+    active_dcas = db.query(func.count(DCA.id)).filter(DCA.is_active == True).scalar()
+    
 # TODO: implement edge case handling

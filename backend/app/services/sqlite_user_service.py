@@ -148,4 +148,34 @@ def update_user(user_id: str, updates: Dict[str, Any]) -> Optional[Dict[str, Any
 
 def disable_user(user_id: str) -> Optional[Dict[str, Any]]:
     """Toggle user active status"""
+    db = _get_db()
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return None
+        user.is_active = not user.is_active
+        db.commit()
+        db.refresh(user)
+        logger.info(f"✅ {'Disabled' if not user.is_active else 'Enabled'} user {user.email}")
+        return _user_to_dict(user)
+    finally:
+        db.close()
+
+
+def reset_password(user_id: str) -> Optional[Dict[str, Any]]:
+    """Generate a new random password for a user"""
+    db = _get_db()
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return None
+
+        new_password = _generate_password()
+        user.hashed_password = _hash_password(new_password)
+        db.commit()
+        db.refresh(user)
+        logger.info(f"✅ Reset password for {user.email}")
+        result = _user_to_dict(user)
+        result["new_password"] = new_password
+        return result
 # TODO: implement edge case handling
