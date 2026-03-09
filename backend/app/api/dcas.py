@@ -163,4 +163,37 @@ async def create_dca(
 async def update_dca(
     dca_id: str,
     dca_data: DCAUpdate,
+    db: Session = Depends(get_db)
+):
+    """Update a DCA's information"""
+    dca = db.query(DCA).filter(DCA.id == dca_id).first()
+    
+    if not dca:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="DCA not found"
+        )
+    
+    # Update only provided fields
+    update_data = dca_data.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(dca, field, value)
+    
+    dca.updated_at = datetime.now()
+    
+    db.commit()
+    db.refresh(dca)
+    
+    return dca
+
+
+@router.delete("/{dca_id}")
+async def delete_dca(
+    dca_id: str,
+    db: Session = Depends(get_db)
+):
+    """Delete a DCA (soft delete - set inactive)"""
+    dca = db.query(DCA).filter(DCA.id == dca_id).first()
+    
+    if not dca:
 # TODO: implement edge case handling

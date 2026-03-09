@@ -28,4 +28,34 @@ This repository contains:
 
 - Automatic DCA assignment
   - When cases are created (bulk or CSV), the backend:
+    - Computes risk/priority
+    - Selects a DCA based on performance score, SLA breaches, and load
+
+- DCA performance analytics
+  - Per‑DCA metrics:
+    - Active cases
+    - Resolved cases
+    - Recovered amount
+    - Average resolution days
+    - SLA breaches count
+
+- Proof‑backed resolution
+  - Marking a case as recovered or resolved requires:
+    - `proof_type` (UTR, gateway_reference, settlement_letter, etc.)
+    - `proof_reference` (transaction ID, document ID, etc.)
+
+- Audit logging
+  - Every important change is logged with:
+    - Actor email and role
+    - Case ID
+    - Timestamp
+    - Field‑level before/after details
+
+---
+
+## 2. Tech Stack
+
+- Backend
+  - Python 3.x
+  - FastAPI
 

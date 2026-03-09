@@ -238,4 +238,34 @@ async def get_recovery_trends(
         })
     
     return {
+        "period_start": period_start.isoformat(),
+        "period_end": datetime.utcnow().isoformat(),
+        "granularity": granularity,
+        "trends": trends_data
+    }
+
+
+@router.get("/sla/compliance")
+async def get_sla_compliance_report(
+    period_days: int = Query(30, description="Report period in days"),
+    dca_id: Optional[str] = Query(None, description="Specific DCA ID"),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get SLA compliance report"""
+    
+    period_start = datetime.utcnow() - timedelta(days=period_days)
+    now = datetime.utcnow()
+    
+    # Base query
+    query = db.query(Case).filter(Case.created_at >= period_start)
+    
+    if dca_id:
+        query = query.filter(Case.dca_id == dca_id)
+    
+    # Contact SLA compliance
+    contact_sla_total = query.filter(Case.sla_contact_deadline.isnot(None)).count()
+    contact_sla_met = query.filter(
+        Case.first_contact_date <= Case.sla_contact_deadline
+    ).count()
 # TODO: implement edge case handling
