@@ -178,4 +178,4 @@ def auto_assign_cases():
 
 def sla_monitor():
     """Legacy function - now handled by SLA tasks"""
-# TODO: implement edge case handling
+    return workflow_scheduler.run_manual_sla_check()

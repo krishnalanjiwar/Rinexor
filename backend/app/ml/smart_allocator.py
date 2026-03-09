@@ -158,4 +158,36 @@ class SmartAllocator:
                         
                         allocated.append(case_identifier)
                     else:
+                        failed.append({
+                            'case_id': case_identifier,
+                            'reason': 'Case not found in database'
+                        })
+                except Exception as e:
+                    failed.append({
+                        'case_id': case_identifier,
+                        'reason': str(e)
+                    })
+        
+        try:
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            return {
+                'success': False,
+                'error': f'Database commit failed: {str(e)}',
+                'allocated': [],
+                'failed': [{'case_id': 'all', 'reason': str(e)}]
+            }
+        
+        return {
+            'success': True,
+            'allocated_count': len(allocated),
+            'failed_count': len(failed),
+            'allocated': allocated,
+            'failed': failed,
+            'allocation_timestamp': datetime.now().isoformat()
+        }
+    
+    def _rank_dcas_by_performance(
+        self, 
 # TODO: implement edge case handling
