@@ -215,4 +215,35 @@ class DCASearchParams(BaseSchema):
         return v
 
 
+class DCAStatusUpdate(BaseSchema):
+    """Schema for updating DCA status"""
+    is_active: Optional[bool] = None
+    is_accepting_cases: Optional[bool] = None
+    max_concurrent_cases: Optional[int] = None
+    reason: Optional[str] = None  # Reason for status change
+
+
+class DCAPerformanceUpdate(BaseSchema):
+    """Schema for manual performance updates"""
+    performance_score: Optional[float] = None
+    recovery_rate: Optional[float] = None
+    avg_resolution_days: Optional[float] = None
+    sla_compliance_rate: Optional[float] = None
+    notes: Optional[str] = None
+    
+    @validator('performance_score')
+    def validate_performance_score(cls, v):
+        if v is not None and (v < 0 or v > 1):
+            raise ValueError('Performance score must be between 0 and 1')
+        return v
+    
+    @validator('recovery_rate')
+    def validate_recovery_rate(cls, v):
+        if v is not None and (v < 0 or v > 100):
+            raise ValueError('Recovery rate must be between 0 and 100')
+        return v
+    
+    @validator('sla_compliance_rate')
+    def validate_sla_compliance_rate(cls, v):
+        if v is not None and (v < 0 or v > 100):
 # TODO: implement edge case handling

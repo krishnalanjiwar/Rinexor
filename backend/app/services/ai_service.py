@@ -328,4 +328,34 @@ class AIService:
         })
     
     def get_allocation_preview(
+        self, 
+        classified_cases: List[Dict[str, Any]], 
+        dcas: List[Any],
+        db: Any = None
+    ) -> Dict[str, Any]:
+        """
+        Generate allocation preview showing DCA assignments.
+        
+        Args:
+            classified_cases: Cases with risk_level assigned
+            dcas: List of DCA objects
+            db: Optional database session
+            
+        Returns:
+            Allocation preview with summary
+        """
+        return self.smart_allocator.get_allocation_preview(classified_cases, dcas, db)
+    
+    def confirm_and_allocate(
+        self,
+        allocation_preview: List[Dict[str, Any]],
+        cases: List[Dict[str, Any]],
+        db: Any,
+        user_id: str
+    ) -> Dict[str, Any]:
+        """
+        Confirm and execute allocation after user consent.
+        
+        Args:
+            allocation_preview: Approved allocation preview
 # TODO: implement edge case handling

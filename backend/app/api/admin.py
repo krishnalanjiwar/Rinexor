@@ -328,4 +328,34 @@ async def upload_cases_csv(
         
         # Generate summary
         results["summary"] = {
+            "total_processed": len(df),
+            "successful_count": len(results["successful"]),
+            "failed_count": len(results["failed"]),
+            "success_rate": round((len(results["successful"]) / len(df)) * 100, 2) if len(df) > 0 else 0,
+            "uploaded_by": current_user["email"],
+            "upload_timestamp": datetime.utcnow().isoformat()
+        }
+        
+        return results
+        
+    except pd.errors.EmptyDataError:
+        raise HTTPException(status_code=400, detail="CSV file is empty")
+    except pd.errors.ParserError:
+        raise HTTPException(status_code=400, detail="Invalid CSV format")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+
+async def perform_bulk_ai_analysis(case_id: str, case_data: dict, db: Session):
+    """Background task for AI analysis during bulk upload"""
+    try:
+        ai_service = AIService()
+        ai_service.initialize()
+        
+        # Get AI insights
+        ai_result = ai_service.analyze_case(case_data)
+        
+        # Update case with AI insights
+        case = db.query(Case).filter(Case.id == case_id).first()
 # TODO: implement edge case handling

@@ -508,4 +508,34 @@ async def export_cases_report(
         "total_records": len(export_data),
         "export_metadata": {
             "exported_by": current_user["email"],
+            "exported_at": datetime.utcnow().isoformat(),
+            "filters_applied": {
+                "status": status,
+                "dca_id": dca_id,
+                "date_from": date_from.isoformat() if date_from else None,
+                "date_to": date_to.isoformat() if date_to else None
+            }
+        }
+    }
+
+
+# ============================================================
+# DASHBOARD ENDPOINTS — Real data for frontend charts & KPIs
+# ============================================================
+
+@router.get("/dashboard/kpis")
+async def get_dashboard_kpis(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get KPI cards data for dashboard overview"""
+
+    # Total cases
+    total_cases = db.query(func.count(Case.id)).scalar() or 0
+
+    # Active cases (not resolved or closed)
+    active_cases = db.query(func.count(Case.id)).filter(
+        Case.status.notin_([CaseStatus.RESOLVED, "closed"])
+    ).scalar() or 0
+
 # TODO: implement edge case handling
