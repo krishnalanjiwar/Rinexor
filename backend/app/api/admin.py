@@ -58,4 +58,34 @@ async def create_user(
         dca_id=user_data.dca_id,
         is_active=True,
         created_at=datetime.utcnow()
+    )
+    
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    
+    return user
+
+@router.put("/users/{user_id}/deactivate")
+async def deactivate_user(
+    user_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_role(["enterprise_admin"]))
+):
+    """Deactivate user (admin only)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.id == current_user["id"]:
+        raise HTTPException(status_code=400, detail="Cannot deactivate yourself")
+    
+    user.is_active = False
+    user.updated_at = datetime.utcnow()
+    db.commit()
+    
+    return {"message": "User deactivated successfully"}
+
+@router.post("/sla/check-violations")
 # TODO: implement edge case handling

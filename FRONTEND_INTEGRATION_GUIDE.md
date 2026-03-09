@@ -118,4 +118,34 @@ POST /api/v1/ai/analyze-case
 Body: {
   "original_amount": 5000,
   "days_delinquent": 45,
+  "debt_type": "credit_card"
+}
+
+// Analyze Portfolio
+POST /api/v1/ai/analyze-portfolio
+Body: { "case_ids": ["id1", "id2", "id3"] }
+
+// Get Patterns
+GET /api/v1/ai/patterns
+
+// Get Model Status
+GET /api/v1/ai/model-status
+
+// Prioritize Cases
+POST /api/v1/ai/prioritize-cases
+Body: { "case_ids": ["id1", "id2"] }
+```
+
+### **📊 Reports & Analytics**
+```javascript
+// Dashboard Overview
+GET /api/v1/reports/dashboard/overview
+
+// DCA Performance Report
+GET /api/v1/reports/performance/dcas?period_days=30&dca_id=123
+
+// Recovery Trends
+GET /api/v1/reports/recovery/trends?period_days=90&granularity=daily
+
+// SLA Compliance
 

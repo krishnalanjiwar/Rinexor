@@ -118,4 +118,34 @@ class RiskClassifier:
         amount = case_data.get('original_amount', 0)
         if amount > 100000:
             amount_risk = 90
+        elif amount > 50000:
+            amount_risk = 75
+        elif amount > 25000:
+            amount_risk = 55
+        elif amount > 10000:
+            amount_risk = 40
+        elif amount > 5000:
+            amount_risk = 25
+        else:
+            amount_risk = 15
+        risk_score += amount_risk * 0.25
+        
+        # 3. Credit Score (20% weight) - Lower credit = higher risk
+        credit_score = case_data.get('credit_score', 650)
+        if credit_score < 500:
+            credit_risk = 95
+        elif credit_score < 580:
+            credit_risk = 75
+        elif credit_score < 650:
+            credit_risk = 55
+        elif credit_score < 700:
+            credit_risk = 35
+        elif credit_score < 750:
+            credit_risk = 20
+        else:
+            credit_risk = 10
+        risk_score += credit_risk * 0.20
+        
+        # 4. Debt Age Severity (15% weight)
+        debt_age_days = case_data.get('debt_age_days', days_delinquent)
 # TODO: implement edge case handling
