@@ -130,4 +130,37 @@ def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
 def get_all_users(skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
     """Get all users with pagination"""
     client = get_qdrant_client()
+    try:
+        result = client.scroll(
+            collection_name=USERS_COLLECTION,
+            limit=limit + skip,  # fetch enough to skip
+            with_payload=True,
+        )
+        points = result[0]
+        users = [_point_to_user(p) for p in points]
+        return users[skip : skip + limit]
+    except Exception as e:
+        logger.error(f"Error fetching all users: {e}")
+        return []
+
+
+# ─── UPDATE ────────────────────────────────────────────────────────────────
+
+def update_user(user_id: str, updates: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Update a user's payload fields"""
+    client = get_qdrant_client()
+
+    existing = get_user_by_id(user_id)
+    if not existing:
+        return None
+
+    # If password is being changed, hash it
+    if "password" in updates:
+        updates["hashed_password"] = pwd_context.hash(updates.pop("password"))
+
+    # Merge updates into existing payload
+    payload = {k: v for k, v in existing.items() if k != "id"}
+    payload.update(updates)
+    payload["updated_at"] = datetime.utcnow().isoformat()
+
 # TODO: implement edge case handling

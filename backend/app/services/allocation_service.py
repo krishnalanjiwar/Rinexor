@@ -126,4 +126,36 @@ class AllocationService:
             Case.dca_id == dca.id,
             Case.status.in_([CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS])
         ).scalar() or 0
+        
+        # Prefer DCAs with lower average case age (faster processing)
+        if avg_case_age <= 7:
+            return 1.0  # Excellent turnaround
+        elif avg_case_age <= 14:
+            return 0.8  # Good turnaround
+        elif avg_case_age <= 30:
+            return 0.6  # Average turnaround
+        else:
+            return 0.3  # Slow turnaround
+    
+    @staticmethod
+    def bulk_allocate_cases(case_ids: List[str], allocation_strategy: str, db: Session, user_id: str) -> Dict[str, Any]:
+        """
+        Bulk allocate multiple cases using specified strategy
+        """
+        results = {
+            "allocated": [],
+            "failed": [],
+            "summary": {}
+        }
+        
+        cases = db.query(Case).filter(
+            Case.id.in_(case_ids),
+            Case.status == CaseStatus.NEW
+        ).all()
+        
+        if allocation_strategy == "performance_based":
+            results = AllocationService._allocate_by_performance(cases, db, user_id)
+        elif allocation_strategy == "capacity_based":
+            results = AllocationService._allocate_by_capacity(cases, db, user_id)
+        elif allocation_strategy == "round_robin":
 # TODO: implement edge case handling

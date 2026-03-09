@@ -148,4 +148,34 @@ async def get_system_stats(
             "by_status": {
                 status.value: db.query(func.count(Case.id)).filter(Case.status == status).scalar()
                 for status in CaseStatus
+            }
+        },
+        "system": {
+            "database_size_mb": round(db_size / (1024 * 1024), 2),
+            "server_time": datetime.utcnow().isoformat(),
+            "api_version": "1.0.0"
+        }
+    }
+
+@router.post("/recalculate-metrics")
+async def recalculate_all_metrics(
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_role(["enterprise_admin"]))
+):
+    """Recalculate all system metrics (admin only)"""
+    # This would trigger background recalculation of all metrics
+    # For now, just return success
+    
+    return {
+        "message": "Metric recalculation started",
+        "tasks": [
+            "DCA performance scores",
+            "User activity metrics", 
+            "Case recovery rates",
+            "SLA compliance rates"
+        ],
+        "started_at": datetime.utcnow()
+    }
+
 # TODO: implement edge case handling

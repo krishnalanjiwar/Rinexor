@@ -178,4 +178,34 @@ class AIService:
             return {
                 'success': False,
                 'error': str(e),
+                'model_saved': False
+            }
+    
+    def parse_uploaded_file(self, file_content: bytes, filename: str) -> Dict[str, Any]:
+        """
+        Parse uploaded CSV or Excel file into case data.
+        
+        Args:
+            file_content: Raw file bytes
+            filename: Original filename to determine file type
+            
+        Returns:
+            Dict with parsed cases or error
+        """
+        try:
+            # Determine file type
+            if filename.endswith('.csv'):
+                df = pd.read_csv(io.BytesIO(file_content))
+            elif filename.endswith(('.xlsx', '.xls')):
+                df = pd.read_excel(io.BytesIO(file_content))
+            else:
+                return {
+                    'success': False,
+                    'error': f'Unsupported file format: {filename}. Please upload CSV or Excel file.'
+                }
+            
+            # Validate required columns
+            required_columns = ['debtor_name', 'original_amount']
+            missing_columns = [col for col in required_columns if col not in df.columns]
+            
 # TODO: implement edge case handling
