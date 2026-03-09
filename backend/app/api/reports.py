@@ -718,4 +718,124 @@ async def get_dashboard_top_dcas(
         ).scalar() or 0
 
         recovery_pct = round((amount_recovered / amount_assigned * 100) if amount_assigned > 0 else 0, 1)
+
+        top_dcas.append({
+            "id": dca.id,
+            "name": dca.name,
+            "code": dca.code,
+            "performance_score": round((dca.performance_score or 0) * 100, 0),
+            "recovery_rate": round(dca.recovery_rate or 0, 1),
+            "sla_compliance": round((dca.sla_compliance_rate or 0) * 100, 0),
+            "total_assigned": total_assigned,
+            "resolved": resolved,
+            "actual_recovery_pct": recovery_pct,
+        })
+
+    return {"top_dcas": top_dcas}
+
+
+@router.get("/dashboard/reports-data")
+async def get_dashboard_reports_data(
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get comprehensive data for the Reports page charts"""
+
+    now = datetime.utcnow()
+    six_months_ago = now - timedelta(days=180)
+
+    # --- Recovery by DCA (for bar chart comparison) ---
+    dcas = db.query(DCA).filter(DCA.is_active == True).limit(5).all()
+    recovery_by_dca = {}
+
+    for dca in dcas:
+        monthly = db.query(
+            func.strftime('%Y-%m', Case.resolved_date).label('month'),
+            func.sum(Case.original_amount - Case.current_amount).label('recovered')
+        ).filter(
+            Case.dca_id == dca.id,
+            Case.resolved_date >= six_months_ago,
+            Case.status == CaseStatus.RESOLVED
+        ).group_by(func.strftime('%Y-%m', Case.resolved_date)).order_by(
+            func.strftime('%Y-%m', Case.resolved_date)
+        ).all()
+
+        for row in monthly:
+            if row.month not in recovery_by_dca:
+                recovery_by_dca[row.month] = {"month": row.month}
+            recovery_by_dca[row.month][dca.code] = round(float(row.recovered or 0), 2)
+
+    month_names = {
+        '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr',
+        '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug',
+        '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec'
+    }
+
+    recovery_comparison = []
+    for m in sorted(recovery_by_dca.keys()):
+        entry = recovery_by_dca[m]
+        month_num = m.split('-')[1]
+        entry["month"] = month_names.get(month_num, m)
+        recovery_comparison.append(entry)
+
+    dca_keys = [{"key": dca.code, "name": dca.name} for dca in dcas]
+
+    # --- SLA Compliance Trends ---
+    sla_trends = []
+    for i in range(6):
+        month_offset = 5 - i
+        m_start = (now - timedelta(days=month_offset * 30)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if month_offset == 0:
+            m_end = now
+        else:
+            m_end = (now - timedelta(days=(month_offset - 1) * 30)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        total_with_sla = db.query(func.count(Case.id)).filter(
+            Case.created_at >= m_start,
+            Case.created_at < m_end,
+            Case.sla_resolution_deadline.isnot(None)
+        ).scalar() or 0
+
+        compliant = db.query(func.count(Case.id)).filter(
+            Case.created_at >= m_start,
+            Case.created_at < m_end,
+            Case.resolved_date <= Case.sla_resolution_deadline
+        ).scalar() or 0
+
+        compliant_pct = round((compliant / total_with_sla * 100) if total_with_sla > 0 else 95, 1)
+        breached_pct = round(100 - compliant_pct, 1)
+
+        month_num = f'{m_start.month:02d}'
+        sla_trends.append({
+            "month": month_names.get(month_num, str(m_start.month)),
+            "compliant": compliant_pct,
+            "breached": breached_pct,
+        })
+
+    # --- Ageing Distribution ---
+    age_buckets = [
+        {"bucket": "0-30", "min": 0, "max": 30},
+        {"bucket": "31-60", "min": 31, "max": 60},
+        {"bucket": "61-90", "min": 61, "max": 90},
+        {"bucket": "90+", "min": 91, "max": 99999},
+    ]
+
+    ageing_data = []
+    for bucket in age_buckets:
+        if bucket["max"] == 99999:
+            count = db.query(func.count(Case.id)).filter(
+                Case.days_delinquent >= bucket["min"]
+            ).scalar() or 0
+            amount = db.query(func.sum(Case.original_amount)).filter(
+                Case.days_delinquent >= bucket["min"]
+            ).scalar() or 0
+        else:
+            count = db.query(func.count(Case.id)).filter(
+                and_(Case.days_delinquent >= bucket["min"], Case.days_delinquent <= bucket["max"])
+            ).scalar() or 0
+            amount = db.query(func.sum(Case.original_amount)).filter(
+                and_(Case.days_delinquent >= bucket["min"], Case.days_delinquent <= bucket["max"])
+            ).scalar() or 0
+
+        ageing_data.append({
 # TODO: implement edge case handling
