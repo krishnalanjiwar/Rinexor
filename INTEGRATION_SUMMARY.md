@@ -59,3 +59,33 @@ A comprehensive TypeScript API client that handles all communication with the ba
 
 ---
 
+## 3. Login Page Integration
+
+### File Modified: `src/pages/auth/Login.tsx`
+
+**Changes Made:**
+- Updated to use `loginWithCredentials()` for actual backend authentication
+- Pre-filled demo credentials matching backend DEMO_USERS
+- Async form submission with proper error handling
+- Loading state feedback during authentication
+- Error messages from backend API
+
+**Demo Credentials:**
+```
+Super Admin: admin@rinexor.com / admin123
+Enterprise Admin: enterprise@demo.com / enterprise123
+DCA User: dca@demo.com / dca123
+```
+
+---
+
+## 4. Cases Dashboard Integration
+
+### File Modified: `src/pages/dashboard/Cases.tsx`
+
+**Changes Made:**
+- Integrated `apiClient.getCases()` to fetch real case data
+- Converted API case objects to frontend CaseRow format
+- Added SLA deadline calculation (automatically computes days left)
+- Status mapping: API statuses → Frontend UI labels
+

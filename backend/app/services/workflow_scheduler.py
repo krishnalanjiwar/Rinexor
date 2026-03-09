@@ -58,4 +58,34 @@ class WorkflowScheduler:
             #     id='sla_breach_check'
             # )
             # 
+            # self.scheduler.add_job(
+            #     daily_escalation_check,
+            #     'cron',
+            #     hour=9,  # 9 AM daily
+            #     id='case_escalation'
+            # )
+            # 
+            # self.scheduler.add_job(
+            #     sla_status_update,
+            #     'interval',
+            #     hours=6,
+            #     id='sla_status_update'
+            # )
+            # 
+            # self.scheduler.add_job(
+            #     daily_sla_report,
+            #     'cron',
+            #     hour=23,  # 11 PM daily
+            #     id='daily_sla_report'
+            # )
+            # 
+            # self.scheduler.add_job(
+            #     cleanup_breaches,
+            #     'cron',
+            #     hour=2,  # 2 AM daily
+            #     id='breach_cleanup'
+            # )
+            # 
+            # self.scheduler.start()
+            # self.is_running = True
 # TODO: implement edge case handling
