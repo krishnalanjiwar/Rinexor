@@ -568,4 +568,34 @@ async def get_dashboard_kpis(
     if month_start.month == 1:
         last_month_start = month_start.replace(year=month_start.year - 1, month=12)
     else:
+        last_month_start = month_start.replace(month=month_start.month - 1)
+
+    cases_this_month = db.query(func.count(Case.id)).filter(
+        Case.created_at >= month_start
+    ).scalar() or 0
+    cases_last_month = db.query(func.count(Case.id)).filter(
+        and_(Case.created_at >= last_month_start, Case.created_at < month_start)
+    ).scalar() or 0
+
+    cases_change = ((cases_this_month - cases_last_month) / max(cases_last_month, 1)) * 100
+
+    return {
+        "total_cases": total_cases,
+        "active_cases": active_cases,
+        "total_outstanding": round(total_outstanding, 2),
+        "total_original": round(total_original, 2),
+        "recovered_amount": round(recovered_amount, 2),
+        "recovery_rate": round(recovery_rate, 1),
+        "active_dcas": active_dcas,
+        "sla_breaches": sla_breaches,
+        "high_priority_cases": high_priority,
+        "cases_this_month": cases_this_month,
+        "cases_change_pct": round(cases_change, 1),
+        "last_updated": now.isoformat()
+    }
+
+
+@router.get("/dashboard/recovery-chart")
+async def get_dashboard_recovery_chart(
+    months: int = Query(10, description="Number of months of data"),
 # TODO: implement edge case handling

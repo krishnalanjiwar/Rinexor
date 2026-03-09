@@ -350,4 +350,36 @@ class AllocationService:
             else:
                 failed.append({"case_id": case.id, "reason": "No suitable DCA found"})
         
+        db.commit()
+        
+        return {
+            "allocated": allocated,
+            "failed": failed,
+            "summary": {
+                "total_cases": len(cases),
+                "allocated_count": len(allocated),
+                "failed_count": len(failed)
+            }
+        }
+    
+    @staticmethod
+    def get_allocation_recommendations(case_id: str, db: Session) -> List[Dict[str, Any]]:
+        """Get DCA recommendations for a specific case"""
+        case = db.query(Case).filter(Case.id == case_id).first()
+        if not case:
+            return []
+        
+        case_data = {
+            "original_amount": case.original_amount,
+            "days_delinquent": case.days_delinquent,
+            "debt_type": getattr(case, 'debt_type', 'other')
+        }
+        
+        dcas = db.query(DCA).filter(
+            DCA.is_active == True,
+            DCA.is_accepting_cases == True
+        ).all()
+        
+        recommendations = []
+        
 # TODO: implement edge case handling

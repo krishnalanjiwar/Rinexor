@@ -358,4 +358,34 @@ async def perform_bulk_ai_analysis(case_id: str, case_data: dict, db: Session):
         
         # Update case with AI insights
         case = db.query(Case).filter(Case.id == case_id).first()
+        if case:
+            case.ml_features = {
+                "ai_analysis": ai_result,
+                "analyzed_at": datetime.utcnow().isoformat(),
+                "bulk_upload": True
+            }
+            case.recovery_score = ai_result.get("recovery_probability", case.recovery_score) * 100
+            case.priority = ai_result.get("priority_level", case.priority)
+            db.commit()
+            
+    except Exception as e:
+        print(f"Bulk AI analysis failed for case {case_id}: {e}")
+
+
+@router.get("/upload-template")
+async def get_csv_template(
+    current_user: dict = Depends(require_role(["enterprise_admin"]))
+):
+    """Get CSV template for case upload"""
+    
+    template_data = {
+        "csv_template": {
+            "filename": "cases_upload_template.csv",
+            "columns": [
+                {
+                    "name": "account_id",
+                    "type": "string",
+                    "required": True,
+                    "description": "Unique account identifier"
+                },
 # TODO: implement edge case handling
