@@ -88,4 +88,34 @@ class RinexorAPI {
 
   async addCaseNote(caseId, noteData) {
     return this.apiCall(`/cases/${caseId}/notes`, {
+      method: 'POST',
+      body: JSON.stringify(noteData)
+    });
+  }
+
+  async getCaseNotes(caseId) {
+    return this.apiCall(`/cases/${caseId}/notes`);
+  }
+
+  async allocateCases(caseIds, dcaId) {
+    return this.apiCall('/cases/allocate', {
+      method: 'POST',
+      body: JSON.stringify({ case_ids: caseIds, dca_id: dcaId })
+    });
+  }
+
+  async getDashboardStats() {
+    return this.apiCall('/cases/dashboard/stats');
+  }
+
+  // DCA Management
+  async getDCAs(filters = {}) {
+    const params = new URLSearchParams(filters);
+    return this.apiCall(`/dcas?${params}`);
+  }
+
+  async getDCA(dcaId) {
+    return this.apiCall(`/dcas/${dcaId}`);
+  }
+
 // TODO: refactor logic here

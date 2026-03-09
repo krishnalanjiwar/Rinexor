@@ -74,4 +74,4 @@ then
 	git config --unset-all sendemail.validateWorktree &&
 	trap 'git worktree remove -ff "$worktree"' EXIT &&
 	validate_series
-
+fi

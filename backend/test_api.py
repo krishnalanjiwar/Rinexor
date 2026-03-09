@@ -82,4 +82,4 @@ print(f"  • DCAs API: {'✅' if response.status_code == 200 else '❌'}")
 print(f"  • AI API: {'✅' if response.status_code == 200 else '❌'}")
 print(f"  • Admin API: {'✅' if response.status_code == 200 else '❌'}")
 
-# TODO: implement edge case handling
+print("\n🌐 API Documentation: http://127.0.0.1:9000/api/docs")
