@@ -418,4 +418,34 @@ async def get_portfolio_analysis(
     
     return {
         "portfolio_summary": {
+            "total_cases": db.query(func.count(Case.id)).scalar() or 0,
+            "total_portfolio_value": round(total_portfolio_value, 2),
+            "current_portfolio_value": round(current_portfolio_value, 2),
+            "recovered_value": round(recovered_value, 2),
+            "recovery_rate": round((recovered_value / total_portfolio_value * 100) if total_portfolio_value > 0 else 0, 2)
+        },
+        "priority_breakdown": priority_data,
+        "recovery_band_breakdown": recovery_band_data,
+        "age_distribution": age_distribution,
+        "dca_allocation": dca_data,
+        "unallocated": {
+            "cases": unallocated_cases,
+            "amount": float(unallocated_amount or 0)
+        },
+        "generated_at": datetime.utcnow().isoformat()
+    }
+
+
+@router.get("/export/cases")
+async def export_cases_report(
+    format: str = Query("json", description="Export format: json, csv"),
+    status: Optional[str] = Query(None, description="Filter by status"),
+    dca_id: Optional[str] = Query(None, description="Filter by DCA"),
+    date_from: Optional[datetime] = Query(None, description="Start date"),
+    date_to: Optional[datetime] = Query(None, description="End date"),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(require_role(["enterprise_admin", "collection_manager"]))
+):
+    """Export cases report in specified format"""
+    
 # TODO: implement edge case handling

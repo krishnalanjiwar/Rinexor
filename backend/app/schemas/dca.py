@@ -184,4 +184,35 @@ class DCARecommendationResponse(BaseSchema):
     total_recommendations: int
     best_match: Optional[DCARecommendation] = None
 
+
+class DCASearchParams(BaseSchema):
+    """Schema for DCA search parameters"""
+    name: Optional[str] = None
+    code: Optional[str] = None
+    is_active: Optional[bool] = None
+    is_accepting_cases: Optional[bool] = None
+    min_performance_score: Optional[float] = None
+    max_performance_score: Optional[float] = None
+    specialization: Optional[List[str]] = None
+    min_capacity: Optional[int] = None
+    sort_by: Optional[str] = "performance_score"
+    sort_order: Optional[str] = "desc"
+    
+    @validator('sort_by')
+    def validate_sort_by(cls, v):
+        valid_fields = [
+            "name", "code", "performance_score", "recovery_rate", 
+            "created_at", "current_active_cases", "sla_compliance_rate"
+        ]
+        if v not in valid_fields:
+            raise ValueError(f'Sort field must be one of: {", ".join(valid_fields)}')
+        return v
+    
+    @validator('sort_order')
+    def validate_sort_order(cls, v):
+        if v not in ["asc", "desc"]:
+            raise ValueError('Sort order must be "asc" or "desc"')
+        return v
+
+
 # TODO: implement edge case handling

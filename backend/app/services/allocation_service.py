@@ -222,4 +222,36 @@ class AllocationService:
                 Case.dca_id == dca.id,
                 Case.status.in_([CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS])
             ).scalar() or 0
+            
+            max_capacity = getattr(dca, 'max_concurrent_cases', 50)
+            available = max_capacity - current_cases
+            
+            if available > 0:
+                dca_capacity.append((dca, available))
+        
+        # Sort by available capacity (most available first)
+        dca_capacity.sort(key=lambda x: x[1], reverse=True)
+        
+        allocated = []
+        failed = []
+        
+        for case in cases:
+            if dca_capacity:
+                # Allocate to DCA with most capacity
+                best_dca, capacity = dca_capacity[0]
+                
+                case.dca_id = best_dca.id
+                case.status = CaseStatus.ALLOCATED
+                case.allocated_by = user_id
+                case.allocation_date = func.now()
+                allocated.append(case.id)
+                
+                # Update capacity tracking
+                dca_capacity[0] = (best_dca, capacity - 1)
+                if capacity - 1 <= 0:
+                    dca_capacity.pop(0)  # Remove if at capacity
+                else:
+                    # Re-sort to maintain order
+                    dca_capacity.sort(key=lambda x: x[1], reverse=True)
+            else:
 # TODO: implement edge case handling

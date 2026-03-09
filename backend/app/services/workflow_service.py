@@ -190,4 +190,36 @@ class WorkflowService:
     @staticmethod
     def check_sla_breaches(db: Session) -> list:
         """Check for SLA breaches across all active cases"""
+        now = datetime.utcnow()
+        
+        # Find cases with breached contact SLA
+        contact_breaches = db.query(Case).filter(
+            Case.status.in_([CaseStatus.NEW, CaseStatus.ALLOCATED]),
+            Case.sla_contact_deadline < now,
+            Case.first_contact_date.is_(None)
+        ).all()
+        
+        # Find cases with breached resolution SLA
+        resolution_breaches = db.query(Case).filter(
+            Case.status.in_([CaseStatus.NEW, CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS]),
+            Case.sla_resolution_deadline < now,
+            Case.resolved_date.is_(None)
+        ).all()
+        
+        breaches = []
+        
+        for case in contact_breaches:
+            breaches.append({
+                "case_id": case.id,
+                "breach_type": "contact_sla",
+                "deadline": case.sla_contact_deadline,
+                "days_overdue": (now - case.sla_contact_deadline).days
+            })
+        
+        for case in resolution_breaches:
+            breaches.append({
+                "case_id": case.id,
+                "breach_type": "resolution_sla", 
+                "deadline": case.sla_resolution_deadline,
+                "days_overdue": (now - case.sla_resolution_deadline).days
 # TODO: implement edge case handling
