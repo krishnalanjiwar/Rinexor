@@ -31,4 +31,37 @@ def _dummy_vector() -> List[float]:
 
 def _point_to_user(point) -> Dict[str, Any]:
     """Convert a Qdrant point to a user dict"""
+    user = dict(point.payload)
+    user["id"] = str(point.id) if point.id else user.get("id")
+    return user
+
+
+# ─── CREATE ────────────────────────────────────────────────────────────────
+
+def create_user(
+    email: str,
+    password: str,
+    name: str,
+    role: str,
+    enterprise_id: Optional[str] = None,
+    dca_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Create a new user in Qdrant Cloud"""
+    client = get_qdrant_client()
+
+    # Check if email already exists
+    existing = get_user_by_email(email)
+    if existing:
+        raise ValueError(f"User with email '{email}' already exists")
+
+    user_id = str(uuid.uuid4())
+    now = datetime.utcnow().isoformat()
+
+    payload = {
+        "email": email,
+        "hashed_password": pwd_context.hash(password),
+        "name": name,
+        "role": role,
+        "enterprise_id": enterprise_id,
+        "dca_id": dca_id,
 # TODO: implement edge case handling

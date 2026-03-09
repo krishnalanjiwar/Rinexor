@@ -118,4 +118,34 @@ async def get_dca_performance_report(
             Case.dca_id == dca.id,
             Case.resolved_date >= period_start,
             Case.status == CaseStatus.RESOLVED
+        ).scalar() or 0
+        
+        # Calculate metrics
+        resolution_rate = (cases_resolved / cases_assigned * 100) if cases_assigned > 0 else 0
+        recovery_rate = (amount_recovered / amount_assigned * 100) if amount_assigned > 0 else 0
+        
+        # Average resolution time
+        avg_resolution_days = db.query(
+            func.avg(func.julianday(Case.resolved_date) - func.julianday(Case.allocation_date))
+        ).filter(
+            Case.dca_id == dca.id,
+            Case.resolved_date >= period_start,
+            Case.status == CaseStatus.RESOLVED
+        ).scalar() or 0
+        
+        # SLA compliance
+        total_cases_with_sla = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id,
+            Case.allocation_date >= period_start,
+            Case.sla_resolution_deadline.isnot(None)
+        ).scalar() or 0
+        
+        sla_compliant_cases = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id,
+            Case.allocation_date >= period_start,
+            Case.resolved_date <= Case.sla_resolution_deadline
+        ).scalar() or 0
+        
+        sla_compliance = (sla_compliant_cases / total_cases_with_sla * 100) if total_cases_with_sla > 0 else 0
+        
 # TODO: implement edge case handling
