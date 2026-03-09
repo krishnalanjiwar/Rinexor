@@ -122,4 +122,35 @@ async def train_ai_model(
             return {
                 "success": False,
                 "message": f"Need at least 10 resolved cases for training. Found {len(cases)}.",
+                "suggestion": "Use mock data for demo"
+            }
+        
+        # Prepare training data
+        training_data = []
+        for case in cases:
+            case_dict = {
+                "original_amount": case.original_amount,
+                "days_delinquent": case.days_delinquent,
+                "recovery_rate": ((case.original_amount - case.current_amount) / case.original_amount) * 100
+            }
+            training_data.append(case_dict)
+        
+        # Train model
+        result = ai_service.train_model(training_data)
+        
+        return {
+            "success": result["success"],
+            "message": "AI model trained successfully" if result["success"] else "Training failed",
+            "details": result
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Model training failed: {str(e)}")
+
+@router.get("/model-status")
+async def get_model_status(
+    current_user: dict = Depends(get_current_user)
+):
+    """Get AI model status"""
+    try:
+        import os
 # TODO: implement edge case handling

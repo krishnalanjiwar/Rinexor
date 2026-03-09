@@ -178,4 +178,34 @@ def reset_password(user_id: str) -> Optional[Dict[str, Any]]:
         result = _user_to_dict(user)
         result["new_password"] = new_password
         return result
+    finally:
+        db.close()
+
+
+def delete_user(user_id: str) -> bool:
+    db = _get_db()
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return False
+        db.delete(user)
+        db.commit()
+        return True
+    finally:
+        db.close()
+
+
+# ─── AUTH ──────────────────────────────────────────────────────────────────
+
+def authenticate_user(email: str, password: str) -> Optional[Dict[str, Any]]:
+    """Authenticate by email + password"""
+    user_data = get_user_by_email(email)
+    if not user_data:
+        return None
+    if not _verify_password(password, user_data.get("hashed_password", "")):
+        return None
+    if not user_data.get("is_active", True):
+        return None
+    # Remove hashed_password from returned data
+    user_data.pop("hashed_password", None)
 # TODO: implement edge case handling
