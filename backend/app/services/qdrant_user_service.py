@@ -97,4 +97,37 @@ def get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
         )
         if points:
             return _point_to_user(points[0])
+    except Exception as e:
+        logger.error(f"Error fetching user {user_id}: {e}")
+    return None
+
+
+def get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
+    """Get a user by email (scrolls collection with filter)"""
+    client = get_qdrant_client()
+    try:
+        result = client.scroll(
+            collection_name=USERS_COLLECTION,
+            scroll_filter=Filter(
+                must=[
+                    FieldCondition(
+                        key="email",
+                        match=MatchValue(value=email),
+                    )
+                ]
+            ),
+            limit=1,
+            with_payload=True,
+        )
+        points = result[0]  # scroll returns (points, next_offset)
+        if points:
+            return _point_to_user(points[0])
+    except Exception as e:
+        logger.error(f"Error fetching user by email '{email}': {e}")
+    return None
+
+
+def get_all_users(skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
+    """Get all users with pagination"""
+    client = get_qdrant_client()
 # TODO: implement edge case handling

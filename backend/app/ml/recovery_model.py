@@ -153,4 +153,35 @@ class RecoveryModel:
             score -= 30
         elif amount > 25000:
             score -= 20
+        elif amount > 10000:
+            score -= 10
+        
+        # Ensure score is between 0-100
+        return max(0, min(100, round(score, 1)))
+    
+    def get_feature_importance(self) -> Dict[str, float]:
+        """Get feature importance from model"""
+        if not self.is_trained or self.feature_columns is None:
+            return {}
+        
+        if hasattr(self.model, 'feature_importances_'):
+            importances = self.model.feature_importances_
+        elif hasattr(self.model, 'coef_'):
+            importances = np.abs(self.model.coef_[0])
+        else:
+            return {}
+        
+        # Map to feature names
+        importance_dict = dict(zip(self.feature_columns, importances))
+        
+        # Sort by importance
+        sorted_importance = dict(sorted(
+            importance_dict.items(), 
+            key=lambda x: x[1], 
+            reverse=True
+        ))
+        
+        return sorted_importance
+    
+    def _calculate_confidence(self, probability: float) -> str:
 # TODO: implement edge case handling
