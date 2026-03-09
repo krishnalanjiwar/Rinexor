@@ -68,4 +68,39 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     user.pop("hashed_password", None)
     return user
 
+
+@router.post("/login")
+def login(login_request: LoginRequest):
+    """Authenticate against SQLite user store"""
+    from app.services.sqlite_user_service import authenticate_user
+    user = authenticate_user(login_request.email, login_request.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["email"]}, expires_delta=access_token_expires
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user["id"],
+            "email": user["email"],
+            "name": user["name"],
+            "role": user["role"],
+            "dca_id": user.get("dca_id"),
+        }
+    }
+
+
+@router.get("/profile", response_model=User)
+def get_profile(current_user: dict = Depends(get_current_user)):
+    return User(
+        id=current_user["id"],
+        email=current_user["email"],
+        name=current_user["name"],
+        role=current_user["role"],
+        enterprise_id=current_user.get("enterprise_id"),
+        dca_id=current_user.get("dca_id"),
 # TODO: implement edge case handling
