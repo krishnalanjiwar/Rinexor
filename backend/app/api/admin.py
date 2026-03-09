@@ -388,4 +388,34 @@ async def get_csv_template(
                     "required": True,
                     "description": "Unique account identifier"
                 },
+                {
+                    "name": "debtor_name", 
+                    "type": "string",
+                    "required": True,
+                    "description": "Full name of the debtor"
+                },
+                {
+                    "name": "debtor_email",
+                    "type": "string", 
+                    "required": False,
+                    "description": "Email address of the debtor"
+                },
+                {
+                    "name": "debtor_phone",
+                    "type": "string",
+                    "required": False, 
+                    "description": "Phone number of the debtor"
+                },
+                {
+                    "name": "debtor_address",
+                    "type": "string",
+                    "required": False,
+                    "description": "Address of the debtor"
+                },
+                {
+                    "name": "original_amount",
+                    "type": "number",
+                    "required": True,
+                    "description": "Original debt amount"
+                },
 # TODO: implement edge case handling

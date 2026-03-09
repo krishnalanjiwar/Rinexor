@@ -598,4 +598,34 @@ async def get_dashboard_kpis(
 @router.get("/dashboard/recovery-chart")
 async def get_dashboard_recovery_chart(
     months: int = Query(10, description="Number of months of data"),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Get monthly recovery data for line/area charts"""
+
+    now = datetime.utcnow()
+    start_date = now - timedelta(days=months * 30)
+
+    # Monthly recovery data from resolved cases
+    recovery_by_month = db.query(
+        func.strftime('%Y-%m', Case.resolved_date).label('month'),
+        func.sum(Case.original_amount - Case.current_amount).label('recovered'),
+        func.count(Case.id).label('cases_resolved')
+    ).filter(
+        Case.resolved_date >= start_date,
+        Case.status == CaseStatus.RESOLVED
+    ).group_by(func.strftime('%Y-%m', Case.resolved_date)).order_by(
+        func.strftime('%Y-%m', Case.resolved_date)
+    ).all()
+
+    # Monthly case creation data
+    creation_by_month = db.query(
+        func.strftime('%Y-%m', Case.created_at).label('month'),
+        func.sum(Case.original_amount).label('amount_created'),
+        func.count(Case.id).label('cases_created')
+    ).filter(
+        Case.created_at >= start_date
+    ).group_by(func.strftime('%Y-%m', Case.created_at)).order_by(
+        func.strftime('%Y-%m', Case.created_at)
+    ).all()
 # TODO: implement edge case handling

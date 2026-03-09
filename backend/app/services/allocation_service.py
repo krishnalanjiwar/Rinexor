@@ -382,4 +382,36 @@ class AllocationService:
         
         recommendations = []
         
+        for dca in dcas:
+            score = AllocationService._calculate_dca_score(case_data, dca, db)
+            
+            if score > 0:
+                recommendations.append({
+                    "dca_id": dca.id,
+                    "dca_name": dca.name,
+                    "dca_code": dca.code,
+                    "allocation_score": round(score, 3),
+                    "performance_score": dca.performance_score,
+                    "current_capacity": AllocationService._get_current_capacity(dca, db),
+                    "specialization_match": AllocationService._calculate_specialization_score(case_data, dca)
+                })
+        
+        # Sort by allocation score
+        recommendations.sort(key=lambda x: x["allocation_score"], reverse=True)
+        
+        return recommendations
+    
+    @staticmethod
+    def _get_current_capacity(dca: DCA, db: Session) -> Dict[str, int]:
+        """Get current capacity info for a DCA"""
+        current_cases = db.query(func.count(Case.id)).filter(
+            Case.dca_id == dca.id,
+            Case.status.in_([CaseStatus.ALLOCATED, CaseStatus.IN_PROGRESS])
+        ).scalar() or 0
+        
+        max_capacity = getattr(dca, 'max_concurrent_cases', 50)
+        
+        return {
+            "current_cases": current_cases,
+            "max_capacity": max_capacity,
 # TODO: implement edge case handling
