@@ -1,0 +1,5 @@
+fix: use try/catch fallback instead of probe detection for mock data
+
+Every API method now tries the real backend first and falls back to
+mock data on any error. This eliminates race conditions and reliably
+handles Vercel's 404 HTML responses.
