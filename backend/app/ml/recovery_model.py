@@ -184,4 +184,35 @@ class RecoveryModel:
         return sorted_importance
     
     def _calculate_confidence(self, probability: float) -> str:
+        """Calculate prediction confidence"""
+        if probability > 0.8 or probability < 0.2:
+            return 'high'
+        elif probability > 0.6 or probability < 0.4:
+            return 'medium'
+        else:
+            return 'low'
+    
+    def _generate_explanation(self, features: Dict[str, float], probability: float) -> Dict[str, Any]:
+        """Generate human-readable explanation"""
+        key_factors = []
+        risk_factors = []
+        
+        # Analyze features
+        if features.get('delinquency_severity', 0) > 0.7:
+            risk_factors.append('Highly delinquent account')
+        elif features.get('delinquency_severity', 0) < 0.3:
+            key_factors.append('Recently delinquent')
+        
+        if features.get('amount_log', 0) > np.log1p(20000):
+            risk_factors.append('High debt amount')
+        
+        if features.get('credit_score_norm', 0) > 0.7:
+            key_factors.append('Good credit history')
+        elif features.get('credit_score_norm', 0) < 0.5:
+            risk_factors.append('Poor credit history')
+        
+        if features.get('employment_stability', 0) > 0.7:
+            key_factors.append('Stable employment')
+        
+        # Determine recommended action
 # TODO: implement edge case handling

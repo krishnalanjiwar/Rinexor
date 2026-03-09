@@ -158,4 +158,36 @@ class AllocationService:
         elif allocation_strategy == "capacity_based":
             results = AllocationService._allocate_by_capacity(cases, db, user_id)
         elif allocation_strategy == "round_robin":
+            results = AllocationService._allocate_round_robin(cases, db, user_id)
+        else:
+            results = AllocationService._allocate_intelligent(cases, db, user_id)
+        
+        return results
+    
+    @staticmethod
+    def _allocate_by_performance(cases: List[Case], db: Session, user_id: str) -> Dict[str, Any]:
+        """Allocate cases to highest performing DCAs first"""
+        # Get DCAs sorted by performance
+        dcas = db.query(DCA).filter(
+            DCA.is_active == True,
+            DCA.is_accepting_cases == True
+        ).order_by(DCA.performance_score.desc()).all()
+        
+        allocated = []
+        failed = []
+        
+        for case in cases:
+            case_data = {
+                "original_amount": case.original_amount,
+                "days_delinquent": case.days_delinquent,
+                "debt_type": getattr(case, 'debt_type', 'other')
+            }
+            
+            best_dca = AllocationService.find_best_dca(case_data, dcas, db)
+            
+            if best_dca:
+                case.dca_id = best_dca.id
+                case.status = CaseStatus.ALLOCATED
+                case.allocated_by = user_id
+                case.allocation_date = func.now()
 # TODO: implement edge case handling

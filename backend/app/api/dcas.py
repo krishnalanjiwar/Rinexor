@@ -229,4 +229,6 @@ async def activate_dca(
     dca.is_accepting_cases = True
     dca.updated_at = datetime.now()
     
-# TODO: implement edge case handling
+    db.commit()
+    
+    return {"message": f"DCA '{dca.name}' has been activated"}

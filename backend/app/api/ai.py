@@ -246,4 +246,35 @@ async def analyze_uploaded_file(
         # Analyze file
         result = ai_service.analyze_uploaded_file(content, filename)
         
+        if not result['success']:
+            raise HTTPException(status_code=400, detail=result.get('error', 'Analysis failed'))
+        
+        # Store in cache for allocation preview
+        import uuid
+        analysis_id = str(uuid.uuid4())
+        _analysis_cache[analysis_id] = result
+        
+        return {
+            "success": True,
+            "analysis_id": analysis_id,
+            "total_cases": result['total_cases'],
+            "risk_distribution": result['risk_distribution'],
+            "classification_timestamp": result['classification_timestamp'],
+            "cases_preview": result['classified_cases'][:10]  # First 10 for preview
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"File analysis failed: {str(e)}")
+
+
+@router.post("/allocation-preview")
+async def get_allocation_preview(
+    analysis_id: str,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_optional_user)
+):
+    """
+    Generate allocation preview showing which DCA gets which cases.
+    Must call analyze-file first to get analysis_id.
 # TODO: implement edge case handling
