@@ -190,4 +190,36 @@ class SmartAllocator:
     
     def _rank_dcas_by_performance(
         self, 
+        dcas: List[Any], 
+        db: Optional[Session] = None
+    ) -> List[Dict[str, Any]]:
+        """Rank DCAs by composite performance score"""
+        ranked = []
+        
+        for dca in dcas:
+            # Calculate composite score
+            performance = getattr(dca, 'performance_score', 0) or 0
+            recovery_rate = getattr(dca, 'recovery_rate', 0) or 0
+            sla_compliance = getattr(dca, 'sla_compliance_rate', 0) or 0
+            
+            # Weighted composite score
+            composite_score = (
+                performance * 0.40 +
+                recovery_rate * 0.40 +
+                sla_compliance * 0.20
+            )
+            
+            # Get capacity info
+            max_capacity = getattr(dca, 'max_concurrent_cases', 50)
+            current_cases = getattr(dca, 'current_active_cases', 0)
+            available_capacity = max_capacity - current_cases
+            
+            if available_capacity > 0:  # Only include DCAs with capacity
+                ranked.append({
+                    'dca_id': dca.id,
+                    'dca_name': dca.name,
+                    'dca_code': getattr(dca, 'code', ''),
+                    'performance_score': round(performance, 3),
+                    'recovery_rate': round(recovery_rate, 3),
+                    'sla_compliance': round(sla_compliance, 3),
 # TODO: implement edge case handling

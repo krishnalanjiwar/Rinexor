@@ -94,4 +94,36 @@ def test_allocation_service():
         capacity_score = AllocationService._calculate_capacity_score(dca, db)
         print(f"✅ AllocationService capacity scoring: {capacity_score}")
         
+    except Exception as e:
+        print(f"❌ AllocationService error: {e}")
+
+def test_notification_service():
+    """Test NotificationService"""
+    print("\n📧 Testing NotificationService...")
+    
+    try:
+        # Test notification preferences
+        prefs = NotificationService.get_notification_preferences("user-123", None)
+        print(f"✅ NotificationService preferences: {prefs}")
+        
+        # Test preference update
+        new_prefs = {"email_enabled": True, "sla_breach_alerts": True}
+        result = NotificationService.update_notification_preferences("user-123", new_prefs, None)
+        print(f"✅ NotificationService preference update: {result}")
+        
+    except Exception as e:
+        print(f"❌ NotificationService error: {e}")
+
+def test_sla_tasks():
+    """Test SLA monitoring tasks"""
+    print("\n⏰ Testing SLA Tasks...")
+    
+    try:
+        # Test SLA status calculation
+        from datetime import datetime, timedelta
+        
+        class MockCase:
+            def __init__(self):
+                self.sla_contact_deadline = datetime.utcnow() + timedelta(hours=2)
+                self.sla_resolution_deadline = datetime.utcnow() + timedelta(days=5)
 # TODO: implement edge case handling

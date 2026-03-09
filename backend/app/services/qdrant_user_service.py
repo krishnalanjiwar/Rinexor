@@ -64,4 +64,37 @@ def create_user(
         "role": role,
         "enterprise_id": enterprise_id,
         "dca_id": dca_id,
+        "is_active": True,
+        "created_at": now,
+        "updated_at": None,
+    }
+
+    client.upsert(
+        collection_name=USERS_COLLECTION,
+        points=[
+            PointStruct(
+                id=user_id,
+                vector=_dummy_vector(),
+                payload=payload,
+            )
+        ],
+    )
+
+    logger.info(f"✅ Created user {email} (id={user_id})")
+    return {"id": user_id, **payload}
+
+
+# ─── READ ──────────────────────────────────────────────────────────────────
+
+def get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
+    """Get a user by their point ID"""
+    client = get_qdrant_client()
+    try:
+        points = client.retrieve(
+            collection_name=USERS_COLLECTION,
+            ids=[user_id],
+            with_payload=True,
+        )
+        if points:
+            return _point_to_user(points[0])
 # TODO: implement edge case handling
