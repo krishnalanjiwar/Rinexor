@@ -298,4 +298,34 @@ const uploadCases = async (file) => {
       'Authorization': `Bearer ${api.token}`
     },
     body: formData
+  });
+  
+  return response.json();
+};
+```
+
+---
+
+## 🎯 **Data Models & Types**
+
+### **📋 Case Object**
+```typescript
+interface Case {
+  id: string;
+  account_id: string;
+  debtor_name: string;
+  debtor_email?: string;
+  debtor_phone?: string;
+  original_amount: number;
+  current_amount: number;
+  currency: string;
+  days_delinquent: number;
+  status: "new" | "allocated" | "in_progress" | "escalated" | "resolved" | "closed";
+  priority: "high" | "medium" | "low";
+  recovery_score: number;
+  dca_id?: string;
+  created_at: string;
+  updated_at?: string;
+}
+```
 

@@ -222,4 +222,6 @@ class WorkflowService:
                 "breach_type": "resolution_sla", 
                 "deadline": case.sla_resolution_deadline,
                 "days_overdue": (now - case.sla_resolution_deadline).days
-# TODO: implement edge case handling
+            })
+        
+        return breaches

@@ -178,4 +178,7 @@ Defined in `backend/app/api/auth.py`:
 
 ---
 
+## 7. Development Notes
 
+- All data (users, DCAs, cases, audit log) is in memory for demo purposes.
+- The project is intended as a functional prototype and product concept, not a production deployment.
